@@ -19,4 +19,5 @@ RUN DJANGO_SECRET_KEY=build-time-placeholder-not-used-at-runtime \
 
 EXPOSE 8000
 
-CMD ["sh", "-c", "python manage.py migrate --noinput && gunicorn metocore.wsgi:application --bind 0.0.0.0:8000 --workers 2"]
+# Railway injects PORT at runtime; default to 8000 for local `docker run`.
+CMD ["sh", "-c", "python manage.py migrate --noinput && gunicorn metocore.wsgi:application --bind 0.0.0.0:${PORT:-8000} --workers 2"]
