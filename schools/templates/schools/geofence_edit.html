@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit {{ geofence.name }}</title>
+</head>
+<body>
+    <p><a href="{% url 'geofence-list' %}">&laquo; Geofences</a></p>
+    <h1>Edit {{ geofence.name }}</h1>
+
+    {% if messages %}
+    <ul>
+        {% for message in messages %}<li>{{ message }}</li>{% endfor %}
+    </ul>
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+        <label>Name <input type="text" name="name" value="{{ geofence.name }}" required></label>
+        <label>Latitude <input type="text" name="center_latitude" value="{{ geofence.center_latitude }}" required></label>
+        <label>Longitude <input type="text" name="center_longitude" value="{{ geofence.center_longitude }}" required></label>
+        <label>Radius (meters) <input type="number" name="radius_m" value="{{ geofence.radius_m }}" required></label>
+        <button type="submit">Save changes</button>
+    </form>
+</body>
+</html>

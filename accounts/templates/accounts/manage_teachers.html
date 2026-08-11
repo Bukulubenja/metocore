@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Teachers</title>
+</head>
+<body>
+    <p><a href="{% url 'dashboard' %}">&laquo; Dashboard</a></p>
+    <h1>Teachers</h1>
+
+    {% if messages %}
+    <ul>
+        {% for message in messages %}<li>{{ message }}</li>{% endfor %}
+    </ul>
+    {% endif %}
+
+    <h2>Current teachers</h2>
+    <ul>
+        {% for teacher in teachers %}
+        <li>
+            {{ teacher.username }} ({{ teacher.email }})
+            <form method="post" action="{% url 'teacher-remove' teacher.id %}" style="display:inline">
+                {% csrf_token %}
+                <button type="submit">Remove</button>
+            </form>
+        </li>
+        {% empty %}
+        <li>No teachers yet.</li>
+        {% endfor %}
+    </ul>
+
+    <h2>Invite a teacher</h2>
+    <form method="post">
+        {% csrf_token %}
+        <input type="email" name="email" placeholder="teacher@example.com" required>
+        <button type="submit">Send invitation</button>
+    </form>
+
+    <h2>Pending invitations</h2>
+    <ul>
+        {% for invitation in invitations %}
+        <li>
+            {{ invitation.email }}
+            {% if invitation.accepted_at %}— accepted
+            {% elif invitation.revoked_at %}— revoked
+            {% elif invitation.is_expired %}— expired
+            {% else %}— pending (expires {{ invitation.expires_at|date:"Y-m-d" }})
+            {% endif %}
+
+            {% if not invitation.accepted_at and not invitation.revoked_at %}
+            <form method="post" action="{% url 'teacher-invitation-resend' invitation.id %}" style="display:inline">
+                {% csrf_token %}
+                <button type="submit">Resend</button>
+            </form>
+            <form method="post" action="{% url 'teacher-invitation-revoke' invitation.id %}" style="display:inline">
+                {% csrf_token %}
+                <button type="submit">Revoke</button>
+            </form>
+            {% endif %}
+        </li>
+        {% empty %}
+        <li>No invitations sent yet.</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

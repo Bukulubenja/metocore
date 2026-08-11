@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Today's Check-Ins — {{ today }}</title>
+</head>
+<body>
+    <h1>Today's Check-Ins — {{ today }}</h1>
+    <p>
+        <a href="{% url 'teacher-list' %}">Manage teachers</a> |
+        <a href="{% url 'geofence-list' %}">Manage geofences</a> |
+        <a href="{% url 'logout' %}">Sign out</a>
+    </p>
+    <table>
+        <thead>
+            <tr>
+                <th>Teacher</th>
+                <th>Time</th>
+                <th>Status</th>
+                <th>Reason</th>
+                <th>GPS Accuracy</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for check_in in check_ins %}
+            <tr>
+                <td>{{ check_in.teacher.username }}</td>
+                <td>{{ check_in.checked_in_at|time:"H:i" }}</td>
+                <td>{{ check_in.get_status_display }}</td>
+                <td>{{ check_in.reason }}</td>
+                <td>±{{ check_in.gps_accuracy_m }}m</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="5">No check-ins yet today.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

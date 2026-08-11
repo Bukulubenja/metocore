@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Geofences</title>
+</head>
+<body>
+    <p><a href="{% url 'dashboard' %}">&laquo; Dashboard</a></p>
+    <h1>Geofences</h1>
+
+    {% if messages %}
+    <ul>
+        {% for message in messages %}<li>{{ message }}</li>{% endfor %}
+    </ul>
+    {% endif %}
+
+    <ul>
+        {% for geofence in geofences %}
+        <li>
+            {{ geofence.name }} — {{ geofence.center_latitude }}, {{ geofence.center_longitude }}
+            (±{{ geofence.radius_m }}m)
+            <a href="{% url 'geofence-edit' geofence.id %}">Edit</a>
+        </li>
+        {% empty %}
+        <li>No geofences yet — add one below so teachers can check in.</li>
+        {% endfor %}
+    </ul>
+
+    <h2>Add a geofence</h2>
+    <form method="post">
+        {% csrf_token %}
+        <label>Name <input type="text" name="name" required></label>
+        <label>Latitude <input type="text" name="center_latitude" placeholder="6.5244" required></label>
+        <label>Longitude <input type="text" name="center_longitude" placeholder="3.3792" required></label>
+        <label>Radius (meters) <input type="number" name="radius_m" placeholder="150" required></label>
+        <button type="submit">Add geofence</button>
+    </form>
+</body>
+</html>

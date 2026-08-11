@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Invitation no longer valid</title>
+</head>
+<body>
+    <h1>This invitation is no longer valid</h1>
+    {% if invitation.accepted_at %}
+    <p>This invitation has already been used.</p>
+    {% else %}
+    <p>This invitation expired on {{ invitation.expires_at|date:"Y-m-d" }}.</p>
+    {% endif %}
+    <p>Ask your platform administrator to send a new invitation.</p>
+</body>
+</html>
