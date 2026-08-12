@@ -1,11 +1,13 @@
 {% extends "base.html" %}
-{% block title %}Sign in — SchoolOS{% endblock %}
+{% block title %}Sign in — Metocore{% endblock %}
 {% block header %}{% endblock %}
 
 {% block content %}
+{% load static %}
 <div class="hero-band">
+    <span class="hero-band__logo"><img src="{% static 'img/logo-full.png' %}" alt="Metocore"></span>
     <h1>Welcome back</h1>
-    <p>Sign in to SchoolOS.</p>
+    <p>Sign in to Metocore.</p>
 </div>
 
 <div class="card" style="max-width: 380px; margin: -1.5rem auto 0;">

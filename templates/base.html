@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{% block title %}SchoolOS{% endblock %}</title>
+    <title>{% block title %}Metocore{% endblock %}</title>
+    <link rel="icon" type="image/png" href="{% static 'img/favicon.png' %}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@700;800&display=swap" rel="stylesheet">
@@ -14,7 +15,10 @@
     <div class="app-shell">
         {% block header %}
         <header class="app-header">
-            <a class="app-header__brand" href="{% url 'home' %}">SchoolOS</a>
+            <a class="app-header__brand" href="{% url 'home' %}">
+                <span class="app-header__logo-chip"><img src="{% static 'img/logo-icon.png' %}" alt=""></span>
+                Metocore
+            </a>
             <nav class="app-header__nav">
                 {% block header_nav %}{% endblock %}
                 {% if user.is_authenticated %}

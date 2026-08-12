@@ -1,10 +1,12 @@
 {% extends "base.html" %}
-{% block title %}Check In — SchoolOS{% endblock %}
+{% block title %}Check In — Metocore{% endblock %}
 
 {% block header %}{% endblock %}
 
 {% block content %}
+{% load static %}
 <div class="hero-band">
+    <span class="hero-band__logo"><img src="{% static 'img/logo-full.png' %}" alt="Metocore"></span>
     <h1>Hi, {{ user.first_name|default:user.username }}</h1>
     <p>Tap the button below when you arrive to check in.</p>
 </div>

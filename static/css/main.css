@@ -1,4 +1,4 @@
-/* SchoolOS design system
+/* Metocore design system
    Signature: deep-navy curved header band (echoes the reference UI kit),
    card-based layout, pill buttons, tinted status badges. */
 
@@ -102,12 +102,49 @@ textarea:focus-visible,
 }
 
 .app-header__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
   font-family: var(--font-display);
   font-weight: 800;
   font-size: 1.1rem;
   letter-spacing: -0.01em;
   color: #fff;
   text-decoration: none;
+}
+
+.app-header__logo-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: #fff;
+  border-radius: 9px;
+  flex-shrink: 0;
+}
+
+.app-header__logo-chip img {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+}
+
+.hero-band__logo {
+  width: 56px;
+  height: 56px;
+  background: #fff;
+  border-radius: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.hero-band__logo img {
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
 }
 
 .app-header__nav {

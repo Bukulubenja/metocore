@@ -10,7 +10,7 @@ def send_invitation_email(invitation: SchoolAdminInvitation, request) -> None:
         reverse("accept-invitation", args=[invitation.token])
     )
     send_mail(
-        subject=f"You're invited to manage {invitation.school.name} on SchoolOS",
+        subject=f"You're invited to manage {invitation.school.name} on Metocore",
         message=(
             f"You've been invited to be an administrator for {invitation.school.name}.\n\n"
             f"Accept your invitation here: {accept_url}\n\n"
