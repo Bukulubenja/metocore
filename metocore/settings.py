@@ -194,6 +194,10 @@ STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 
+# Serves files placed in metocore/root/ (sw.js, offline.html) at the site root
+# so the service worker gets scope "/" instead of being confined to /static/.
+WHITENOISE_ROOT = BASE_DIR / 'root'
+
 # The manifest-based storage requires collectstatic to have already run, which
 # only happens at Docker build time in production. Using it in dev/test too
 # would make `pytest` fail on a fresh checkout until collectstatic is run by
