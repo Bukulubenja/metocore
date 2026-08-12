@@ -9,6 +9,7 @@ from rest_framework.views import APIView
 
 from attendance.models import CheckIn
 from attendance.serializers import CheckInRequestSerializer, CheckInResponseSerializer
+from attendance.status import determine_checkin_status
 from schools.models import Geofence
 
 
@@ -82,6 +83,23 @@ class CheckInCreateView(APIView):
             geofences,
             key=lambda g: g.distance_to(data["latitude"], data["longitude"]),
         )
+
+        distance_m = nearest_geofence.distance_to(data["latitude"], data["longitude"])
+        projected_status, _ = determine_checkin_status(
+            distance_m, data["gps_accuracy_m"], nearest_geofence.radius_m
+        )
+
+        if projected_status == CheckIn.Status.CONFIRMED:
+            already_confirmed_today = CheckIn.objects.filter(
+                teacher=request.user,
+                status=CheckIn.Status.CONFIRMED,
+                checked_in_at__date=timezone.localdate(),
+            ).exists()
+            if already_confirmed_today:
+                return Response(
+                    {"detail": "You've already checked in today."},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
 
         check_in = CheckIn.create_from_location(
             teacher=request.user,

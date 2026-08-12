@@ -123,6 +123,52 @@ def test_invalid_latitude_rejected(api_client, teacher, geofence):
 
 
 @pytest.mark.django_db
+def test_second_confirmed_checkin_same_day_rejected(api_client, teacher, geofence):
+    api_client.force_authenticate(user=teacher)
+
+    first = api_client.post(
+        "/api/check-ins/",
+        {"latitude": 0.001, "longitude": 0.0, "gps_accuracy_m": 15},
+        format="json",
+    )
+    assert first.status_code == 201
+    assert first.data["status"] == CheckIn.Status.CONFIRMED
+
+    second = api_client.post(
+        "/api/check-ins/",
+        {"latitude": 0.001, "longitude": 0.0, "gps_accuracy_m": 15},
+        format="json",
+    )
+
+    assert second.status_code == 400
+    assert "already checked in" in second.data["detail"].lower()
+    assert CheckIn.objects.count() == 1
+
+
+@pytest.mark.django_db
+def test_needs_review_checkin_allowed_after_earlier_confirmed_checkin(api_client, teacher, geofence):
+    api_client.force_authenticate(user=teacher)
+
+    first = api_client.post(
+        "/api/check-ins/",
+        {"latitude": 0.001, "longitude": 0.0, "gps_accuracy_m": 15},
+        format="json",
+    )
+    assert first.status_code == 201
+    assert first.data["status"] == CheckIn.Status.CONFIRMED
+
+    second = api_client.post(
+        "/api/check-ins/",
+        {"latitude": 0.001, "longitude": 0.0, "gps_accuracy_m": 150},
+        format="json",
+    )
+
+    assert second.status_code == 201
+    assert second.data["status"] == CheckIn.Status.NEEDS_REVIEW
+    assert CheckIn.objects.count() == 2
+
+
+@pytest.mark.django_db
 def test_checks_in_against_nearest_geofence_when_multiple_exist(api_client, teacher, school, geofence):
     far_geofence = Geofence.objects.create(
         school=school,
