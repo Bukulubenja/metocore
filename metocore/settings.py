@@ -90,6 +90,7 @@ AUTH_USER_MODEL = 'accounts.User'
 
 LOGIN_URL = '/accounts/login/'
 LOGIN_REDIRECT_URL = '/home/'
+LOGOUT_REDIRECT_URL = '/accounts/login/'
 
 # Defaults to printing emails to the console. Set DJANGO_EMAIL_BACKEND (and the
 # related DJANGO_EMAIL_* vars below) to point at a real SMTP provider before
