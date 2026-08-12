@@ -22,7 +22,10 @@
     </div>
 </div>
 
-<p class="text-center"><a href="{% url 'logout' %}">Sign out</a></p>
+<form method="post" action="{% url 'logout' %}" class="text-center">
+    {% csrf_token %}
+    <button type="submit" class="link-button">Sign out</button>
+</form>
 
 <script>
     var STATUS_BADGE_CLASS = {
