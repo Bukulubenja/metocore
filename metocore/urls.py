@@ -16,6 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
+from django.views.generic.base import RedirectView
 
 from accounts.views import (
     manage_teachers,
@@ -27,6 +28,7 @@ from attendance.views import check_in_page, dashboard, home_redirect
 from schools.views import geofence_edit, manage_geofences
 
 urlpatterns = [
+    path('', RedirectView.as_view(pattern_name='home', permanent=False)),
     path('admin/', admin.site.urls),
     path('accounts/', include('django.contrib.auth.urls')),
     path('home/', home_redirect, name='home'),
