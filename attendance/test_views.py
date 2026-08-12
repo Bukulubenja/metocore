@@ -169,6 +169,84 @@ def test_needs_review_checkin_allowed_after_earlier_confirmed_checkin(api_client
 
 
 @pytest.mark.django_db
+def test_checkout_without_checkin_rejected(api_client, teacher, geofence):
+    api_client.force_authenticate(user=teacher)
+
+    response = api_client.post(
+        "/api/check-outs/",
+        {"latitude": 0.001, "longitude": 0.0, "gps_accuracy_m": 15},
+        format="json",
+    )
+
+    assert response.status_code == 400
+    assert "no confirmed check-in" in response.data["detail"].lower()
+
+
+@pytest.mark.django_db
+def test_checkout_after_checkin_succeeds(api_client, teacher, geofence):
+    api_client.force_authenticate(user=teacher)
+
+    api_client.post(
+        "/api/check-ins/",
+        {"latitude": 0.001, "longitude": 0.0, "gps_accuracy_m": 15},
+        format="json",
+    )
+
+    response = api_client.post(
+        "/api/check-outs/",
+        {"latitude": 0.002, "longitude": 0.0, "gps_accuracy_m": 20},
+        format="json",
+    )
+
+    assert response.status_code == 200
+    assert response.data["checked_out_at"] is not None
+
+    check_in = CheckIn.objects.get()
+    assert check_in.checked_out_at is not None
+    assert check_in.checkout_gps_accuracy_m == 20
+
+
+@pytest.mark.django_db
+def test_second_checkout_same_day_rejected(api_client, teacher, geofence):
+    api_client.force_authenticate(user=teacher)
+
+    api_client.post(
+        "/api/check-ins/",
+        {"latitude": 0.001, "longitude": 0.0, "gps_accuracy_m": 15},
+        format="json",
+    )
+    api_client.post(
+        "/api/check-outs/",
+        {"latitude": 0.001, "longitude": 0.0, "gps_accuracy_m": 15},
+        format="json",
+    )
+
+    second = api_client.post(
+        "/api/check-outs/",
+        {"latitude": 0.001, "longitude": 0.0, "gps_accuracy_m": 15},
+        format="json",
+    )
+
+    assert second.status_code == 400
+
+
+@pytest.mark.django_db
+def test_non_teacher_checkout_rejected(api_client, school):
+    admin = User.objects.create_user(
+        username="principal", password="x", role=User.Role.ADMIN, school=school
+    )
+    api_client.force_authenticate(user=admin)
+
+    response = api_client.post(
+        "/api/check-outs/",
+        {"latitude": 0.001, "longitude": 0.0, "gps_accuracy_m": 15},
+        format="json",
+    )
+
+    assert response.status_code == 403
+
+
+@pytest.mark.django_db
 def test_checks_in_against_nearest_geofence_when_multiple_exist(api_client, teacher, school, geofence):
     far_geofence = Geofence.objects.create(
         school=school,

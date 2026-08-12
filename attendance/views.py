@@ -8,7 +8,11 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from attendance.models import CheckIn
-from attendance.serializers import CheckInRequestSerializer, CheckInResponseSerializer
+from attendance.serializers import (
+    CheckInRequestSerializer,
+    CheckInResponseSerializer,
+    CheckOutRequestSerializer,
+)
 from attendance.status import determine_checkin_status
 from schools.models import Geofence
 
@@ -34,7 +38,19 @@ def check_in_page(request):
     if not request.user.is_teacher():
         raise PermissionDenied("Only teachers can check in.")
 
-    return render(request, "attendance/check_in.html")
+    today_check_in = (
+        CheckIn.objects.filter(
+            teacher=request.user,
+            status=CheckIn.Status.CONFIRMED,
+            checked_in_at__date=timezone.localdate(),
+        )
+        .order_by("-checked_in_at")
+        .first()
+    )
+
+    return render(
+        request, "attendance/check_in.html", {"today_check_in": today_check_in}
+    )
 
 
 @login_required
@@ -111,4 +127,45 @@ class CheckInCreateView(APIView):
 
         return Response(
             CheckInResponseSerializer(check_in).data, status=status.HTTP_201_CREATED
+        )
+
+
+class CheckOutView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        if not request.user.is_teacher():
+            return Response(
+                {"detail": "Only teachers can check out."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        request_serializer = CheckOutRequestSerializer(data=request.data)
+        request_serializer.is_valid(raise_exception=True)
+        data = request_serializer.validated_data
+
+        today_check_in = (
+            CheckIn.objects.filter(
+                teacher=request.user,
+                status=CheckIn.Status.CONFIRMED,
+                checked_in_at__date=timezone.localdate(),
+                checked_out_at__isnull=True,
+            )
+            .order_by("-checked_in_at")
+            .first()
+        )
+        if today_check_in is None:
+            return Response(
+                {"detail": "No confirmed check-in found for today to check out from."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        today_check_in.record_checkout(
+            latitude=data["latitude"],
+            longitude=data["longitude"],
+            gps_accuracy_m=data["gps_accuracy_m"],
+        )
+
+        return Response(
+            CheckInResponseSerializer(today_check_in).data, status=status.HTTP_200_OK
         )

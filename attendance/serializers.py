@@ -9,6 +9,12 @@ class CheckInRequestSerializer(serializers.Serializer):
     gps_accuracy_m = serializers.IntegerField(min_value=0)
 
 
+class CheckOutRequestSerializer(serializers.Serializer):
+    latitude = serializers.FloatField(min_value=-90, max_value=90)
+    longitude = serializers.FloatField(min_value=-180, max_value=180)
+    gps_accuracy_m = serializers.IntegerField(min_value=0)
+
+
 class CheckInResponseSerializer(serializers.ModelSerializer):
     class Meta:
         model = CheckIn
@@ -21,5 +27,8 @@ class CheckInResponseSerializer(serializers.ModelSerializer):
             "latitude",
             "longitude",
             "checked_in_at",
+            "checked_out_at",
+            "checkout_distance_m",
+            "checkout_gps_accuracy_m",
         ]
         read_only_fields = fields

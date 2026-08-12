@@ -24,6 +24,12 @@ class CheckIn(models.Model):
     reason = models.TextField()
     checked_in_at = models.DateTimeField(default=timezone.now)
 
+    checked_out_at = models.DateTimeField(null=True, blank=True)
+    checkout_latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    checkout_longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    checkout_gps_accuracy_m = models.PositiveIntegerField(null=True, blank=True)
+    checkout_distance_m = models.FloatField(null=True, blank=True)
+
     class Meta:
         ordering = ["-checked_in_at"]
 
@@ -51,4 +57,20 @@ class CheckIn(models.Model):
             distance_m=distance_m,
             status=status,
             reason=reason,
+        )
+
+    def record_checkout(self, latitude: float, longitude: float, gps_accuracy_m: int) -> None:
+        self.checkout_latitude = latitude
+        self.checkout_longitude = longitude
+        self.checkout_gps_accuracy_m = gps_accuracy_m
+        self.checkout_distance_m = self.geofence.distance_to(latitude, longitude)
+        self.checked_out_at = timezone.now()
+        self.save(
+            update_fields=[
+                "checkout_latitude",
+                "checkout_longitude",
+                "checkout_gps_accuracy_m",
+                "checkout_distance_m",
+                "checked_out_at",
+            ]
         )

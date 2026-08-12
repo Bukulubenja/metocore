@@ -19,7 +19,8 @@
         <thead>
             <tr>
                 <th>Teacher</th>
-                <th>Time</th>
+                <th>Checked in</th>
+                <th>Checked out</th>
                 <th>Status</th>
                 <th>Reason</th>
                 <th>GPS accuracy</th>
@@ -30,6 +31,7 @@
             <tr>
                 <td>{{ check_in.teacher.username }}</td>
                 <td>{{ check_in.checked_in_at|time:"H:i" }}</td>
+                <td>{% if check_in.checked_out_at %}{{ check_in.checked_out_at|time:"H:i" }}{% else %}<span class="muted">—</span>{% endif %}</td>
                 <td>
                     <span class="badge {% if check_in.status == 'CONFIRMED' %}badge-success{% elif check_in.status == 'NEEDS_REVIEW' %}badge-warning{% else %}badge-danger{% endif %}">
                         {{ check_in.get_status_display }}
