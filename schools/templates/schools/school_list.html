@@ -1,30 +1,39 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Schools — Platform Admin</title>
-</head>
-<body>
+{% extends "base.html" %}
+{% block title %}Schools — SchoolOS Console{% endblock %}
+
+{% block header_nav %}
+<a href="{% url 'platform-school-list' %}"><strong>Schools</strong></a>
+{% endblock %}
+
+{% block content %}
+<div class="row-between" style="margin-bottom: 1.25rem;">
     <h1>Schools</h1>
+    <span class="muted">{{ schools|length }} school{{ schools|length|pluralize }}</span>
+</div>
 
-    {% if messages %}
-    <ul>
-        {% for message in messages %}<li>{{ message }}</li>{% endfor %}
-    </ul>
-    {% endif %}
-
-    <form method="post">
+<div class="card" style="margin-bottom: 1.5rem;">
+    <h2>Add a school</h2>
+    <form method="post" class="row">
         {% csrf_token %}
-        <input type="text" name="name" placeholder="School name" required>
-        <button type="submit">Add school</button>
+        <div class="field" style="flex: 1; margin-bottom: 0; min-width: 220px;">
+            <input type="text" name="name" placeholder="School name" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Add school</button>
     </form>
+</div>
 
-    <ul>
-        {% for school in schools %}
-        <li><a href="{% url 'platform-school-detail' school.id %}">{{ school.name }}</a></li>
-        {% empty %}
-        <li>No schools yet.</li>
-        {% endfor %}
-    </ul>
-</body>
-</html>
+{% if schools %}
+<div class="card-grid">
+    {% for school in schools %}
+    <a href="{% url 'platform-school-detail' school.id %}" class="card" style="text-decoration: none; color: inherit; display: block;">
+        <h3 style="margin-bottom: 0.25rem;">{{ school.name }}</h3>
+        <span class="muted" style="font-size: 0.85rem;">Added {{ school.created_at|date:"M j, Y" }}</span>
+    </a>
+    {% endfor %}
+</div>
+{% else %}
+<div class="card empty-state">
+    <p>No schools yet — add one above to get started.</p>
+</div>
+{% endif %}
+{% endblock %}

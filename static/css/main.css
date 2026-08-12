@@ -1,0 +1,387 @@
+/* SchoolOS design system
+   Signature: deep-navy curved header band (echoes the reference UI kit),
+   card-based layout, pill buttons, tinted status badges. */
+
+:root {
+  --color-navy: #003272;
+  --color-navy-dark: #001f47;
+  --color-blue: #0065b3;
+  --color-cyan: #009cd5;
+  --color-green: #134c00;
+  --color-green-light: #4d9822;
+  --color-amber: #b45309;
+  --color-amber-bg: #fef3e2;
+  --color-red: #b91c1c;
+  --color-red-bg: #fdecec;
+  --color-green-bg: #eaf3e3;
+
+  --ink: #0f172a;
+  --ink-muted: #475569;
+  --ink-faint: #94a3b8;
+  --border: #e2e8f0;
+  --surface: #ffffff;
+  --page-bg: #f6f8fb;
+
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-pill: 999px;
+  --shadow-card: 0 4px 20px rgba(0, 50, 114, 0.08);
+  --shadow-card-hover: 0 8px 28px rgba(0, 50, 114, 0.12);
+
+  --font-display: "Manrope", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Inter", "Segoe UI", system-ui, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  color: var(--ink);
+  background: var(--page-bg);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  line-height: 1.2;
+  margin: 0 0 0.5em;
+  color: var(--ink);
+}
+
+h1 { font-size: 1.75rem; }
+h2 { font-size: 1.25rem; }
+h3 { font-size: 1.05rem; }
+
+a {
+  color: var(--color-blue);
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+.btn:focus-visible {
+  outline: 2px solid var(--color-cyan);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* Layout shell */
+
+.app-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-header {
+  background: var(--color-navy);
+  color: #fff;
+  padding: 1rem 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.app-header__brand {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1.1rem;
+  letter-spacing: -0.01em;
+  color: #fff;
+  text-decoration: none;
+}
+
+.app-header__nav {
+  display: flex;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.app-header__nav a {
+  color: rgba(255, 255, 255, 0.85);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.app-header__nav a:hover {
+  color: #fff;
+}
+
+.app-main {
+  flex: 1;
+  width: 100%;
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 1.5rem 1.25rem 3rem;
+}
+
+/* Signature: curved navy header band, used on auth/check-in screens */
+
+.hero-band {
+  background: var(--color-navy);
+  color: #fff;
+  border-radius: 0 0 32px 32px;
+  padding: 2.25rem 1.5rem 2.75rem;
+  text-align: center;
+}
+
+.hero-band h1 {
+  color: #fff;
+  margin-bottom: 0.25rem;
+}
+
+.hero-band p {
+  color: rgba(255, 255, 255, 0.8);
+  margin: 0;
+}
+
+/* Cards */
+
+.card {
+  background: var(--surface);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+  padding: 1.5rem;
+}
+
+.card + .card {
+  margin-top: 1rem;
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1rem;
+}
+
+/* Buttons */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.95rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--radius-pill);
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
+}
+
+.btn:active {
+  transform: scale(0.98);
+}
+
+.btn-primary {
+  background: var(--color-navy);
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background: var(--color-navy-dark);
+}
+
+.btn-secondary {
+  background: var(--border);
+  color: var(--ink);
+}
+
+.btn-danger {
+  background: var(--color-red-bg);
+  color: var(--color-red);
+}
+
+.btn-block {
+  display: flex;
+  width: 100%;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Forms */
+
+.field {
+  margin-bottom: 1rem;
+}
+
+.field label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--ink-muted);
+  margin-bottom: 0.35rem;
+}
+
+.field input,
+.field select,
+.field textarea {
+  width: 100%;
+  padding: 0.7rem 0.9rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  background: var(--surface);
+  color: var(--ink);
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+  outline: 2px solid var(--color-cyan);
+  outline-offset: 1px;
+  border-color: var(--color-cyan);
+}
+
+/* Status badges */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.3rem 0.7rem;
+  border-radius: var(--radius-pill);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.badge-success { background: var(--color-green-bg); color: var(--color-green); }
+.badge-warning { background: var(--color-amber-bg); color: var(--color-amber); }
+.badge-danger  { background: var(--color-red-bg); color: var(--color-red); }
+.badge-neutral { background: var(--border); color: var(--ink-muted); }
+
+/* Data table */
+
+.table-wrap {
+  overflow-x: auto;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+  background: var(--surface);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+th, td {
+  text-align: left;
+  padding: 0.85rem 1.1rem;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+th {
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--ink-muted);
+  background: var(--page-bg);
+}
+
+tr:last-child td {
+  border-bottom: none;
+}
+
+/* Messages */
+
+.messages {
+  list-style: none;
+  margin: 0 0 1.25rem;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.messages li {
+  background: var(--color-green-bg);
+  color: var(--color-green);
+  padding: 0.7rem 1rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+}
+
+/* Empty state */
+
+.empty-state {
+  text-align: center;
+  padding: 2.5rem 1rem;
+  color: var(--ink-muted);
+}
+
+/* Utility */
+
+.stack { display: flex; flex-direction: column; gap: 0.75rem; }
+.row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+.row-between { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+.muted { color: var(--ink-muted); }
+.text-center { text-align: center; }
+
+/* Bottom nav (mobile, teacher check-in) */
+
+.bottom-nav {
+  display: none;
+}
+
+@media (max-width: 640px) {
+  .app-main {
+    padding: 1.25rem 1rem 5.5rem;
+  }
+
+  .bottom-nav {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    padding: 0.6rem 0;
+    justify-content: space-around;
+  }
+
+  .bottom-nav a {
+    color: var(--ink-muted);
+    text-decoration: none;
+    font-size: 0.75rem;
+    font-weight: 600;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.15rem;
+  }
+
+  .bottom-nav a.active {
+    color: var(--color-navy);
+  }
+}

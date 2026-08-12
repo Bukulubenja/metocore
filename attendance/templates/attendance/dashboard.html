@@ -1,16 +1,20 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Today's Check-Ins — {{ today }}</title>
-</head>
-<body>
-    <h1>Today's Check-Ins — {{ today }}</h1>
-    <p>
-        <a href="{% url 'teacher-list' %}">Manage teachers</a> |
-        <a href="{% url 'geofence-list' %}">Manage geofences</a> |
-        <a href="{% url 'logout' %}">Sign out</a>
-    </p>
+{% extends "base.html" %}
+{% block title %}Dashboard — SchoolOS{% endblock %}
+
+{% block header_nav %}
+<a href="{% url 'dashboard' %}"><strong>Dashboard</strong></a>
+<a href="{% url 'teacher-list' %}">Teachers</a>
+<a href="{% url 'geofence-list' %}">Geofences</a>
+{% endblock %}
+
+{% block content %}
+<div class="row-between" style="margin-bottom: 1.25rem;">
+    <h1>Today's check-ins</h1>
+    <span class="muted">{{ today }}</span>
+</div>
+
+{% if check_ins %}
+<div class="table-wrap">
     <table>
         <thead>
             <tr>
@@ -18,7 +22,7 @@
                 <th>Time</th>
                 <th>Status</th>
                 <th>Reason</th>
-                <th>GPS Accuracy</th>
+                <th>GPS accuracy</th>
             </tr>
         </thead>
         <tbody>
@@ -26,14 +30,21 @@
             <tr>
                 <td>{{ check_in.teacher.username }}</td>
                 <td>{{ check_in.checked_in_at|time:"H:i" }}</td>
-                <td>{{ check_in.get_status_display }}</td>
-                <td>{{ check_in.reason }}</td>
+                <td>
+                    <span class="badge {% if check_in.status == 'CONFIRMED' %}badge-success{% elif check_in.status == 'NEEDS_REVIEW' %}badge-warning{% else %}badge-danger{% endif %}">
+                        {{ check_in.get_status_display }}
+                    </span>
+                </td>
+                <td style="white-space: normal; min-width: 260px;">{{ check_in.reason }}</td>
                 <td>±{{ check_in.gps_accuracy_m }}m</td>
             </tr>
-            {% empty %}
-            <tr><td colspan="5">No check-ins yet today.</td></tr>
             {% endfor %}
         </tbody>
     </table>
-</body>
-</html>
+</div>
+{% else %}
+<div class="card empty-state">
+    <p>No check-ins yet today.</p>
+</div>
+{% endif %}
+{% endblock %}

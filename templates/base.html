@@ -1,0 +1,39 @@
+{% load static %}<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}SchoolOS{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+    <div class="app-shell">
+        {% block header %}
+        <header class="app-header">
+            <a class="app-header__brand" href="{% url 'home' %}">SchoolOS</a>
+            <nav class="app-header__nav">
+                {% block header_nav %}{% endblock %}
+                {% if user.is_authenticated %}
+                <a href="{% url 'logout' %}">Sign out</a>
+                {% endif %}
+            </nav>
+        </header>
+        {% endblock %}
+
+        <main class="app-main">
+            {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}<li>{{ message }}</li>{% endfor %}
+            </ul>
+            {% endif %}
+            {% block content %}{% endblock %}
+        </main>
+
+        {% block bottom_nav %}{% endblock %}
+    </div>
+</body>
+</html>

@@ -1,16 +1,33 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Sign in</title>
-</head>
-<body>
-    <h1>Sign in</h1>
+{% extends "base.html" %}
+{% block title %}Sign in — SchoolOS{% endblock %}
+{% block header %}{% endblock %}
+
+{% block content %}
+<div class="hero-band">
+    <h1>Welcome back</h1>
+    <p>Sign in to SchoolOS.</p>
+</div>
+
+<div class="card" style="max-width: 380px; margin: -1.5rem auto 0;">
+    {% if form.errors %}
+    <ul class="messages">
+        <li style="background: var(--color-red-bg); color: var(--color-red);">Incorrect username or password.</li>
+    </ul>
+    {% endif %}
     <form method="post">
         {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Sign in</button>
+        <div class="field">
+            <label for="id_username">Username</label>
+            <input type="text" name="username" id="id_username" required autofocus>
+        </div>
+        <div class="field">
+            <label for="id_password">Password</label>
+            <input type="password" name="password" id="id_password" required>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Sign in</button>
     </form>
-    <p><a href="{% url 'password_reset' %}">Forgot your password?</a></p>
-</body>
-</html>
+    <p class="text-center" style="margin-top: 1rem; margin-bottom: 0;">
+        <a href="{% url 'password_reset' %}">Forgot your password?</a>
+    </p>
+</div>
+{% endblock %}

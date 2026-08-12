@@ -1,26 +1,36 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Edit {{ geofence.name }}</title>
-</head>
-<body>
-    <p><a href="{% url 'geofence-list' %}">&laquo; Geofences</a></p>
-    <h1>Edit {{ geofence.name }}</h1>
+{% extends "base.html" %}
+{% block title %}Edit {{ geofence.name }} — SchoolOS{% endblock %}
 
-    {% if messages %}
-    <ul>
-        {% for message in messages %}<li>{{ message }}</li>{% endfor %}
-    </ul>
-    {% endif %}
+{% block header_nav %}
+<a href="{% url 'dashboard' %}">Dashboard</a>
+<a href="{% url 'teacher-list' %}">Teachers</a>
+<a href="{% url 'geofence-list' %}"><strong>Geofences</strong></a>
+{% endblock %}
 
+{% block content %}
+<p><a href="{% url 'geofence-list' %}">&laquo; Geofences</a></p>
+<h1>Edit {{ geofence.name }}</h1>
+
+<div class="card" style="max-width: 480px;">
     <form method="post">
         {% csrf_token %}
-        <label>Name <input type="text" name="name" value="{{ geofence.name }}" required></label>
-        <label>Latitude <input type="text" name="center_latitude" value="{{ geofence.center_latitude }}" required></label>
-        <label>Longitude <input type="text" name="center_longitude" value="{{ geofence.center_longitude }}" required></label>
-        <label>Radius (meters) <input type="number" name="radius_m" value="{{ geofence.radius_m }}" required></label>
-        <button type="submit">Save changes</button>
+        <div class="field">
+            <label>Name</label>
+            <input type="text" name="name" value="{{ geofence.name }}" required>
+        </div>
+        <div class="field">
+            <label>Latitude</label>
+            <input type="text" name="center_latitude" value="{{ geofence.center_latitude }}" required>
+        </div>
+        <div class="field">
+            <label>Longitude</label>
+            <input type="text" name="center_longitude" value="{{ geofence.center_longitude }}" required>
+        </div>
+        <div class="field">
+            <label>Radius (meters)</label>
+            <input type="number" name="radius_m" value="{{ geofence.radius_m }}" required>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Save changes</button>
     </form>
-</body>
-</html>
+</div>
+{% endblock %}

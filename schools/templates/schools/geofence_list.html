@@ -1,39 +1,59 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Geofences</title>
-</head>
-<body>
-    <p><a href="{% url 'dashboard' %}">&laquo; Dashboard</a></p>
-    <h1>Geofences</h1>
+{% extends "base.html" %}
+{% block title %}Geofences — SchoolOS{% endblock %}
 
-    {% if messages %}
-    <ul>
-        {% for message in messages %}<li>{{ message }}</li>{% endfor %}
-    </ul>
-    {% endif %}
+{% block header_nav %}
+<a href="{% url 'dashboard' %}">Dashboard</a>
+<a href="{% url 'teacher-list' %}">Teachers</a>
+<a href="{% url 'geofence-list' %}"><strong>Geofences</strong></a>
+{% endblock %}
 
-    <ul>
-        {% for geofence in geofences %}
-        <li>
-            {{ geofence.name }} — {{ geofence.center_latitude }}, {{ geofence.center_longitude }}
-            (±{{ geofence.radius_m }}m)
-            <a href="{% url 'geofence-edit' geofence.id %}">Edit</a>
-        </li>
-        {% empty %}
-        <li>No geofences yet — add one below so teachers can check in.</li>
-        {% endfor %}
-    </ul>
+{% block content %}
+<h1>Geofences</h1>
 
-    <h2>Add a geofence</h2>
-    <form method="post">
-        {% csrf_token %}
-        <label>Name <input type="text" name="name" required></label>
-        <label>Latitude <input type="text" name="center_latitude" placeholder="6.5244" required></label>
-        <label>Longitude <input type="text" name="center_longitude" placeholder="3.3792" required></label>
-        <label>Radius (meters) <input type="number" name="radius_m" placeholder="150" required></label>
-        <button type="submit">Add geofence</button>
-    </form>
-</body>
-</html>
+<div class="stack">
+    <div class="card">
+        <h2>Campus zones</h2>
+        {% if geofences %}
+        <div class="stack">
+            {% for geofence in geofences %}
+            <div class="row-between">
+                <div>
+                    <strong>{{ geofence.name }}</strong>
+                    <div class="muted">{{ geofence.center_latitude }}, {{ geofence.center_longitude }} — ±{{ geofence.radius_m }}m radius</div>
+                </div>
+                <a href="{% url 'geofence-edit' geofence.id %}" class="btn btn-secondary">Edit</a>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="muted">No geofences yet — add one below so teachers can check in.</p>
+        {% endif %}
+    </div>
+
+    <div class="card">
+        <h2>Add a geofence</h2>
+        <form method="post">
+            {% csrf_token %}
+            <div class="field">
+                <label>Name</label>
+                <input type="text" name="name" required>
+            </div>
+            <div class="row">
+                <div class="field" style="flex: 1;">
+                    <label>Latitude</label>
+                    <input type="text" name="center_latitude" placeholder="6.5244" required>
+                </div>
+                <div class="field" style="flex: 1;">
+                    <label>Longitude</label>
+                    <input type="text" name="center_longitude" placeholder="3.3792" required>
+                </div>
+                <div class="field" style="flex: 1;">
+                    <label>Radius (meters)</label>
+                    <input type="number" name="radius_m" placeholder="150" required>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Add geofence</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

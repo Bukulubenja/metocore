@@ -1,87 +1,97 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Check In</title>
-</head>
-<body>
-    <h1>Check In</h1>
-    <p><a href="{% url 'logout' %}">Sign out</a></p>
+{% extends "base.html" %}
+{% block title %}Check In — SchoolOS{% endblock %}
 
+{% block header %}{% endblock %}
+
+{% block content %}
+<div class="hero-band">
+    <h1>Hi, {{ user.first_name|default:user.username }}</h1>
+    <p>Tap the button below when you arrive to check in.</p>
+</div>
+
+<div class="card" style="max-width: 420px; margin: -1.5rem auto 0; text-align: center;">
     <form id="csrf-form">{% csrf_token %}</form>
-    <button id="check-in-btn" type="button">Check In Now</button>
-    <p id="status-message"></p>
+    <button id="check-in-btn" type="button" class="btn btn-primary btn-block">Check In Now</button>
+    <p id="status-message" class="muted" style="margin-top: 0.75rem;"></p>
 
-    <div id="result" style="display:none;">
-        <h2 id="result-status"></h2>
-        <p id="result-reason"></p>
+    <div id="result" style="display:none; margin-top: 1.25rem;">
+        <span id="result-status" class="badge"></span>
+        <p id="result-reason" class="muted" style="margin-top: 0.75rem;"></p>
     </div>
+</div>
 
-    <script>
-        var csrftoken = document.querySelector('#csrf-form [name=csrfmiddlewaretoken]').value;
-        var btn = document.getElementById('check-in-btn');
-        var statusMessage = document.getElementById('status-message');
-        var resultDiv = document.getElementById('result');
-        var resultStatus = document.getElementById('result-status');
-        var resultReason = document.getElementById('result-reason');
+<p class="text-center"><a href="{% url 'logout' %}">Sign out</a></p>
 
-        btn.addEventListener('click', function () {
-            resultDiv.style.display = 'none';
+<script>
+    var STATUS_BADGE_CLASS = {
+        CONFIRMED: 'badge-success',
+        NEEDS_REVIEW: 'badge-warning',
+        OUT_OF_RANGE: 'badge-danger'
+    };
 
-            if (!navigator.geolocation) {
-                statusMessage.textContent = 'Your browser does not support location services.';
-                return;
-            }
+    var csrftoken = document.querySelector('#csrf-form [name=csrfmiddlewaretoken]').value;
+    var btn = document.getElementById('check-in-btn');
+    var statusMessage = document.getElementById('status-message');
+    var resultDiv = document.getElementById('result');
+    var resultStatus = document.getElementById('result-status');
+    var resultReason = document.getElementById('result-reason');
 
-            btn.disabled = true;
-            statusMessage.textContent = 'Getting your location...';
+    btn.addEventListener('click', function () {
+        resultDiv.style.display = 'none';
 
-            navigator.geolocation.getCurrentPosition(
-                function (position) {
-                    statusMessage.textContent = 'Submitting check-in...';
+        if (!navigator.geolocation) {
+            statusMessage.textContent = 'Your browser does not support location services.';
+            return;
+        }
 
-                    fetch('/api/check-ins/', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRFToken': csrftoken
-                        },
-                        credentials: 'same-origin',
-                        body: JSON.stringify({
-                            latitude: position.coords.latitude,
-                            longitude: position.coords.longitude,
-                            gps_accuracy_m: Math.round(position.coords.accuracy)
-                        })
+        btn.disabled = true;
+        statusMessage.textContent = 'Getting your location...';
+
+        navigator.geolocation.getCurrentPosition(
+            function (position) {
+                statusMessage.textContent = 'Submitting check-in...';
+
+                fetch('/api/check-ins/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrftoken
+                    },
+                    credentials: 'same-origin',
+                    body: JSON.stringify({
+                        latitude: position.coords.latitude,
+                        longitude: position.coords.longitude,
+                        gps_accuracy_m: Math.round(position.coords.accuracy)
                     })
-                        .then(function (response) {
-                            return response.json().then(function (data) {
-                                return { ok: response.ok, data: data };
-                            });
-                        })
-                        .then(function (result) {
-                            btn.disabled = false;
-                            if (result.ok) {
-                                statusMessage.textContent = '';
-                                resultDiv.style.display = 'block';
-                                resultStatus.textContent = result.data.status;
-                                resultReason.textContent = result.data.reason;
-                            } else {
-                                statusMessage.textContent = result.data.detail || 'Check-in failed.';
-                            }
-                        })
-                        .catch(function () {
-                            btn.disabled = false;
-                            statusMessage.textContent = 'Something went wrong submitting your check-in.';
+                })
+                    .then(function (response) {
+                        return response.json().then(function (data) {
+                            return { ok: response.ok, data: data };
                         });
-                },
-                function (error) {
-                    btn.disabled = false;
-                    statusMessage.textContent = 'Could not get your location: ' + error.message;
-                },
-                { enableHighAccuracy: true, timeout: 15000 }
-            );
-        });
-    </script>
-</body>
-</html>
+                    })
+                    .then(function (result) {
+                        btn.disabled = false;
+                        if (result.ok) {
+                            statusMessage.textContent = '';
+                            resultDiv.style.display = 'block';
+                            resultStatus.className = 'badge ' + (STATUS_BADGE_CLASS[result.data.status] || 'badge-neutral');
+                            resultStatus.textContent = result.data.status;
+                            resultReason.textContent = result.data.reason;
+                        } else {
+                            statusMessage.textContent = result.data.detail || 'Check-in failed.';
+                        }
+                    })
+                    .catch(function () {
+                        btn.disabled = false;
+                        statusMessage.textContent = 'Something went wrong submitting your check-in.';
+                    });
+            },
+            function (error) {
+                btn.disabled = false;
+                statusMessage.textContent = 'Could not get your location: ' + error.message;
+            },
+            { enableHighAccuracy: true, timeout: 15000 }
+        );
+    });
+</script>
+{% endblock %}
