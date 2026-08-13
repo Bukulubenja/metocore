@@ -23,7 +23,7 @@
         <div class="table-wrap">
             <table>
                 <thead>
-                    <tr><th>Day</th><th>Period</th><th>Time</th><th>Type</th></tr>
+                    <tr><th>Day</th><th>Period</th><th>Time</th><th>Type</th><th></th></tr>
                 </thead>
                 <tbody>
                     {% for period in periods %}
@@ -32,6 +32,13 @@
                         <td>{{ period.name }}</td>
                         <td>{{ period.start_time|time:"H:i" }} – {{ period.end_time|time:"H:i" }}</td>
                         <td>{% if period.is_teaching_period %}<span class="badge badge-success">Teaching</span>{% else %}<span class="badge badge-neutral">Break / Lunch</span>{% endif %}</td>
+                        <td class="row" style="gap: 0.4rem; flex-wrap: nowrap;">
+                            <a href="{% url 'timetable-period-edit' period.id %}" class="btn btn-secondary">Edit</a>
+                            <form method="post" action="{% url 'timetable-period-delete' period.id %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger">Delete</button>
+                            </form>
+                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>

@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Edit {{ subject.name }} — Metocore{% endblock %}
+
+{% block header_nav %}
+<a href="{% url 'dashboard' %}">Dashboard</a>
+<a href="{% url 'teacher-list' %}">Teachers</a>
+<a href="{% url 'geofence-list' %}">Geofences</a>
+<a href="{% url 'term-list' %}">Terms</a>
+<a href="{% url 'announcement-list' %}">Announcements</a>
+<a href="{% url 'event-list' %}">Events</a>
+<a href="{% url 'attendance-report' %}">Reports</a>
+<a href="{% url 'timetable-period-list' %}"><strong>Timetable</strong></a>
+{% endblock %}
+
+{% block content %}
+<p><a href="{% url 'timetable-subject-list' %}">&laquo; Subjects</a></p>
+<h1>Edit {{ subject.name }}</h1>
+
+<div class="card" style="max-width: 480px;">
+    <form method="post">
+        {% csrf_token %}
+        <div class="field">
+            <label>Name</label>
+            <input type="text" name="name" value="{{ subject.name }}" required>
+        </div>
+        <div class="field">
+            <label>Code</label>
+            <input type="text" name="code" value="{{ subject.code }}" required>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Save changes</button>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}Edit requirement — Metocore{% endblock %}
+
+{% block header_nav %}
+<a href="{% url 'dashboard' %}">Dashboard</a>
+<a href="{% url 'teacher-list' %}">Teachers</a>
+<a href="{% url 'geofence-list' %}">Geofences</a>
+<a href="{% url 'term-list' %}">Terms</a>
+<a href="{% url 'announcement-list' %}">Announcements</a>
+<a href="{% url 'event-list' %}">Events</a>
+<a href="{% url 'attendance-report' %}">Reports</a>
+<a href="{% url 'timetable-period-list' %}"><strong>Timetable</strong></a>
+{% endblock %}
+
+{% block content %}
+<p><a href="{% url 'timetable-requirement-list' %}">&laquo; Lesson requirements</a></p>
+<h1>Edit lesson requirement</h1>
+
+<div class="card" style="max-width: 480px;">
+    <form method="post">
+        {% csrf_token %}
+        <div class="field">
+            <label>Teacher</label>
+            <select name="teacher_id" required>
+                {% for teacher in teachers %}
+                <option value="{{ teacher.id }}" {% if teacher.id == requirement.teacher_id %}selected{% endif %}>
+                    {% if teacher.title %}{{ teacher.title }} {% endif %}{{ teacher.username }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="field">
+            <label>Subject</label>
+            <select name="subject_id" required>
+                {% for subject in subjects %}
+                <option value="{{ subject.id }}" {% if subject.id == requirement.subject_id %}selected{% endif %}>{{ subject.name }} ({{ subject.code }})</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="field">
+            <label>Class</label>
+            <select name="school_class_id" required>
+                {% for school_class in classes %}
+                <option value="{{ school_class.id }}" {% if school_class.id == requirement.school_class_id %}selected{% endif %}>{{ school_class.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="field">
+            <label>Periods/week</label>
+            <input type="number" name="periods_per_week" min="1" value="{{ requirement.periods_per_week }}" required>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Save changes</button>
+    </form>
+</div>
+{% endblock %}

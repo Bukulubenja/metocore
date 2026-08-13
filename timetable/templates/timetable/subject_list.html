@@ -23,6 +23,13 @@
             {% for subject in subjects %}
             <div class="row-between">
                 <div><strong>{{ subject.name }}</strong> <span class="muted">({{ subject.code }})</span></div>
+                <div class="row" style="gap: 0.4rem;">
+                    <a href="{% url 'timetable-subject-edit' subject.id %}" class="btn btn-secondary">Edit</a>
+                    <form method="post" action="{% url 'timetable-subject-delete' subject.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                </div>
             </div>
             {% endfor %}
         </div>

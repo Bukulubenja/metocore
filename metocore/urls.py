@@ -37,6 +37,8 @@ from attendance.views import (
 from events.views import event_delete, event_list
 from schools.views import geofence_edit, manage_geofences, manage_terms, term_edit
 from timetable.views import (
+    class_delete,
+    class_edit,
     generate_timetable_view,
     manage_classes,
     manage_lesson_requirements,
@@ -44,6 +46,12 @@ from timetable.views import (
     manage_subjects,
     manage_teacher_availability,
     my_timetable,
+    period_delete,
+    period_edit,
+    requirement_delete,
+    requirement_edit,
+    subject_delete,
+    subject_edit,
     timetable_entry_edit,
     timetable_view,
 )
@@ -86,8 +94,24 @@ urlpatterns = [
         'reports/attendance/export/', attendance_report_export, name='attendance-report-export'
     ),
     path('timetable/periods/', manage_periods, name='timetable-period-list'),
+    path('timetable/periods/<int:period_id>/edit/', period_edit, name='timetable-period-edit'),
+    path(
+        'timetable/periods/<int:period_id>/delete/', period_delete, name='timetable-period-delete'
+    ),
     path('timetable/subjects/', manage_subjects, name='timetable-subject-list'),
+    path(
+        'timetable/subjects/<int:subject_id>/edit/', subject_edit, name='timetable-subject-edit'
+    ),
+    path(
+        'timetable/subjects/<int:subject_id>/delete/',
+        subject_delete,
+        name='timetable-subject-delete',
+    ),
     path('timetable/classes/', manage_classes, name='timetable-class-list'),
+    path('timetable/classes/<int:class_id>/edit/', class_edit, name='timetable-class-edit'),
+    path(
+        'timetable/classes/<int:class_id>/delete/', class_delete, name='timetable-class-delete'
+    ),
     path(
         'timetable/availability/',
         manage_teacher_availability,
@@ -97,6 +121,16 @@ urlpatterns = [
         'timetable/requirements/',
         manage_lesson_requirements,
         name='timetable-requirement-list',
+    ),
+    path(
+        'timetable/requirements/<int:requirement_id>/edit/',
+        requirement_edit,
+        name='timetable-requirement-edit',
+    ),
+    path(
+        'timetable/requirements/<int:requirement_id>/delete/',
+        requirement_delete,
+        name='timetable-requirement-delete',
     ),
     path('timetable/generate/', generate_timetable_view, name='timetable-generate'),
     path('timetable/', timetable_view, name='timetable-view'),

@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Edit {{ school_class.name }} — Metocore{% endblock %}
+
+{% block header_nav %}
+<a href="{% url 'dashboard' %}">Dashboard</a>
+<a href="{% url 'teacher-list' %}">Teachers</a>
+<a href="{% url 'geofence-list' %}">Geofences</a>
+<a href="{% url 'term-list' %}">Terms</a>
+<a href="{% url 'announcement-list' %}">Announcements</a>
+<a href="{% url 'event-list' %}">Events</a>
+<a href="{% url 'attendance-report' %}">Reports</a>
+<a href="{% url 'timetable-period-list' %}"><strong>Timetable</strong></a>
+{% endblock %}
+
+{% block content %}
+<p><a href="{% url 'timetable-class-list' %}">&laquo; Classes</a></p>
+<h1>Edit {{ school_class.name }}</h1>
+
+<div class="card" style="max-width: 480px;">
+    <form method="post">
+        {% csrf_token %}
+        <div class="field">
+            <label>Name</label>
+            <input type="text" name="name" value="{{ school_class.name }}" required>
+        </div>
+        <div class="field">
+            <label style="display: flex; align-items: center; gap: 0.5rem; font-weight: 500;">
+                <input type="checkbox" name="allows_parallel_lessons" {% if school_class.allows_parallel_lessons %}checked{% endif %} style="width: auto;">
+                Allows parallel lessons (multiple subject groups at once, e.g. A-Level options)
+            </label>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Save changes</button>
+    </form>
+</div>
+{% endblock %}

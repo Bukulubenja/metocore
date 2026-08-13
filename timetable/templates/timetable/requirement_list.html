@@ -23,7 +23,7 @@
         <div class="table-wrap">
             <table>
                 <thead>
-                    <tr><th>Teacher</th><th>Subject</th><th>Class</th><th>Periods/week</th></tr>
+                    <tr><th>Teacher</th><th>Subject</th><th>Class</th><th>Periods/week</th><th></th></tr>
                 </thead>
                 <tbody>
                     {% for req in requirements %}
@@ -32,6 +32,13 @@
                         <td>{{ req.subject.code }}</td>
                         <td>{{ req.school_class.name }}</td>
                         <td>{{ req.periods_per_week }}</td>
+                        <td class="row" style="gap: 0.4rem; flex-wrap: nowrap;">
+                            <a href="{% url 'timetable-requirement-edit' req.id %}" class="btn btn-secondary">Edit</a>
+                            <form method="post" action="{% url 'timetable-requirement-delete' req.id %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger">Delete</button>
+                            </form>
+                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>
