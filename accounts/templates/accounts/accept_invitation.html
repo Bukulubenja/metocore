@@ -1,24 +1,35 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Accept invitation — {{ invitation.school.name }}</title>
-</head>
-<body>
-    <h1>Join {{ invitation.school.name }} as an admin</h1>
-    <p>Invited email: {{ invitation.email }}</p>
+{% extends "base.html" %}
+{% block title %}Join {{ invitation.school.name }} — Metocore{% endblock %}
+{% block header %}{% endblock %}
 
+{% block content %}
+{% load static %}
+<div class="hero-band">
+    <span class="hero-band__logo"><img src="{% static 'img/logo-full.png' %}" alt="Metocore"></span>
+    <h1>Join {{ invitation.school.name }}</h1>
+    <p>Create your {{ invitation.get_role_display }} account for {{ invitation.email }}.</p>
+</div>
+
+<div class="card" style="max-width: 380px; margin: -1.5rem auto 0;">
     {% if errors %}
-    <ul>
-        {% for error in errors %}<li>{{ error }}</li>{% endfor %}
+    <ul class="messages">
+        {% for error in errors %}
+        <li style="background: var(--color-red-bg); color: var(--color-red);">{{ error }}</li>
+        {% endfor %}
     </ul>
     {% endif %}
 
     <form method="post">
         {% csrf_token %}
-        <label>Username <input type="text" name="username" required></label>
-        <label>Password <input type="password" name="password" required></label>
-        <button type="submit">Create account</button>
+        <div class="field">
+            <label for="id_username">Username</label>
+            <input type="text" name="username" id="id_username" required autofocus>
+        </div>
+        <div class="field">
+            <label for="id_password">Password</label>
+            <input type="password" name="password" id="id_password" required>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Create account</button>
     </form>
-</body>
-</html>
+</div>
+{% endblock %}

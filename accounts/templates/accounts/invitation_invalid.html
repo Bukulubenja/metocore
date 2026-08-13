@@ -1,16 +1,20 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Invitation no longer valid</title>
-</head>
-<body>
+{% extends "base.html" %}
+{% block title %}Invitation no longer valid — Metocore{% endblock %}
+{% block header %}{% endblock %}
+
+{% block content %}
+{% load static %}
+<div class="hero-band">
+    <span class="hero-band__logo"><img src="{% static 'img/logo-full.png' %}" alt="Metocore"></span>
     <h1>This invitation is no longer valid</h1>
+</div>
+
+<div class="card text-center" style="max-width: 380px; margin: -1.5rem auto 0;">
     {% if invitation.accepted_at %}
     <p>This invitation has already been used.</p>
     {% else %}
     <p>This invitation expired on {{ invitation.expires_at|date:"Y-m-d" }}.</p>
     {% endif %}
-    <p>Ask your platform administrator to send a new invitation.</p>
-</body>
-</html>
+    <p class="muted" style="margin-bottom: 0;">Ask your platform administrator to send a new invitation.</p>
+</div>
+{% endblock %}
