@@ -7,7 +7,7 @@
 {% load static %}
 <div class="hero-band">
     <span class="hero-band__logo"><img src="{% static 'img/logo-full.png' %}" alt="Metocore"></span>
-    <h1>Hi, {{ user.first_name|default:user.username }}</h1>
+    <h1>Hi, {% if user.title %}{{ user.title }} {% endif %}{{ user.first_name|default:user.username }}</h1>
     {% if today_check_in and today_check_in.checked_out_at %}
     <p>You're all set for today.</p>
     {% elif today_check_in %}
@@ -46,6 +46,14 @@
     {% csrf_token %}
     <button type="submit" class="link-button">Sign out</button>
 </form>
+
+{% block bottom_nav %}
+<nav class="bottom-nav">
+    <a href="{% url 'check-in-page' %}" class="active">Check In</a>
+    <a href="{% url 'announcement-list' %}">Announcements</a>
+    <a href="{% url 'event-list' %}">Events</a>
+</nav>
+{% endblock %}
 
 <script>
     var STATUS_BADGE_CLASS = {

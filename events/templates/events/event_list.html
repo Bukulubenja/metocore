@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% block title %}Events — Metocore{% endblock %}
+
+{% block header_nav %}
+{% if user.is_school_admin %}
+<a href="{% url 'dashboard' %}">Dashboard</a>
+<a href="{% url 'teacher-list' %}">Teachers</a>
+<a href="{% url 'geofence-list' %}">Geofences</a>
+<a href="{% url 'term-list' %}">Terms</a>
+<a href="{% url 'announcement-list' %}">Announcements</a>
+<a href="{% url 'event-list' %}"><strong>Events</strong></a>
+<a href="{% url 'attendance-report' %}">Reports</a>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<h1>Events</h1>
+
+<div class="stack">
+    {% if user.is_school_admin %}
+    <div class="card">
+        <h2>Add an event</h2>
+        <form method="post">
+            {% csrf_token %}
+            <div class="field">
+                <label>Title</label>
+                <input type="text" name="title" required>
+            </div>
+            <div class="field">
+                <label>Date</label>
+                <input type="date" name="date" required>
+            </div>
+            <div class="field">
+                <label>Location</label>
+                <input type="text" name="location">
+            </div>
+            <div class="field">
+                <label>Description</label>
+                <textarea name="description" rows="3"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Add event</button>
+        </form>
+    </div>
+    {% endif %}
+
+    <div class="card">
+        <h2>Upcoming</h2>
+        {% if upcoming_events %}
+        <div class="stack">
+            {% for event in upcoming_events %}
+            <div class="row-between">
+                <div>
+                    <strong>{{ event.title }}</strong>
+                    <span class="badge badge-success">{{ event.date|date:"Y-m-d" }}</span>
+                    {% if event.location %}<div class="muted">{{ event.location }}</div>{% endif %}
+                    {% if event.description %}<p style="margin: 0.35rem 0; white-space: pre-line;">{{ event.description }}</p>{% endif %}
+                </div>
+                {% if user.is_school_admin %}
+                <form method="post" action="{% url 'event-delete' event.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="muted">No upcoming events.</p>
+        {% endif %}
+    </div>
+
+    <div class="card">
+        <h2>Past</h2>
+        {% if past_events %}
+        <div class="stack">
+            {% for event in past_events %}
+            <div class="row-between">
+                <div>
+                    <strong>{{ event.title }}</strong>
+                    <span class="badge badge-neutral">{{ event.date|date:"Y-m-d" }}</span>
+                </div>
+                {% if user.is_school_admin %}
+                <form method="post" action="{% url 'event-delete' event.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="muted">No past events.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

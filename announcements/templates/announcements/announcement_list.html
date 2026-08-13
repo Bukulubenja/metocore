@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}Announcements — Metocore{% endblock %}
+
+{% block header_nav %}
+{% if user.is_school_admin %}
+<a href="{% url 'dashboard' %}">Dashboard</a>
+<a href="{% url 'teacher-list' %}">Teachers</a>
+<a href="{% url 'geofence-list' %}">Geofences</a>
+<a href="{% url 'term-list' %}">Terms</a>
+<a href="{% url 'announcement-list' %}"><strong>Announcements</strong></a>
+<a href="{% url 'event-list' %}">Events</a>
+<a href="{% url 'attendance-report' %}">Reports</a>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<h1>Announcements</h1>
+
+<div class="stack">
+    {% if user.is_school_admin %}
+    <div class="card">
+        <h2>Post an announcement</h2>
+        <form method="post">
+            {% csrf_token %}
+            <div class="field">
+                <label>Title</label>
+                <input type="text" name="title" required>
+            </div>
+            <div class="field">
+                <label>Body</label>
+                <textarea name="body" rows="4" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Post announcement</button>
+        </form>
+    </div>
+    {% endif %}
+
+    <div class="card">
+        {% if announcements %}
+        <div class="stack">
+            {% for announcement in announcements %}
+            <div class="row-between">
+                <div>
+                    <strong>{{ announcement.title }}</strong>
+                    <p style="margin: 0.35rem 0; white-space: pre-line;">{{ announcement.body }}</p>
+                    <div class="muted">{{ announcement.created_at|date:"Y-m-d H:i" }}{% if announcement.created_by %} — {{ announcement.created_by.username }}{% endif %}</div>
+                </div>
+                {% if user.is_school_admin %}
+                <form method="post" action="{% url 'announcement-delete' announcement.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="muted">No announcements yet.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

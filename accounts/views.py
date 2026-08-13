@@ -127,3 +127,18 @@ def teacher_remove(request, user_id):
     messages.success(request, f"Removed {teacher.username}'s access.")
 
     return redirect("teacher-list")
+
+
+@login_required
+def teacher_update_title(request, user_id):
+    _require_school_admin(request)
+    teacher = get_object_or_404(
+        User, pk=user_id, school=request.user.school, role=User.Role.TEACHER
+    )
+
+    if request.method == "POST":
+        teacher.title = request.POST.get("title", "").strip()
+        teacher.save(update_fields=["title"])
+        messages.success(request, f"Updated {teacher.username}'s title.")
+
+    return redirect("teacher-list")

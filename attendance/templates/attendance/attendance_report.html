@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block title %}Attendance report — Metocore{% endblock %}
+
+{% block header_nav %}
+<a href="{% url 'dashboard' %}">Dashboard</a>
+<a href="{% url 'teacher-list' %}">Teachers</a>
+<a href="{% url 'geofence-list' %}">Geofences</a>
+<a href="{% url 'term-list' %}">Terms</a>
+<a href="{% url 'announcement-list' %}">Announcements</a>
+<a href="{% url 'event-list' %}">Events</a>
+<a href="{% url 'attendance-report' %}"><strong>Reports</strong></a>
+{% endblock %}
+
+{% block content %}
+<h1>Attendance report</h1>
+
+<div class="stack">
+    <div class="card">
+        <h2>Choose a period</h2>
+        {% if errors %}
+        <ul class="messages">
+            {% for error in errors %}
+            <li style="background: var(--color-red-bg); color: var(--color-red);">{{ error }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        <form method="get">
+            <div class="field">
+                <label>Term</label>
+                <select name="term_id">
+                    <option value="">— Use a custom date range —</option>
+                    {% for term in terms %}
+                    <option value="{{ term.id }}">{{ term.academic_year }} — {{ term.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="row">
+                <div class="field" style="flex: 1;">
+                    <label>Start date</label>
+                    <input type="date" name="start_date">
+                </div>
+                <div class="field" style="flex: 1;">
+                    <label>End date</label>
+                    <input type="date" name="end_date">
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Build report</button>
+        </form>
+    </div>
+
+    {% if rows is not None %}
+    <div class="card">
+        <div class="row-between" style="margin-bottom: 1rem;">
+            <h2 style="margin: 0;">Results</h2>
+            <a href="{% url 'attendance-report-export' %}?{{ query_string }}" class="btn btn-secondary">Download CSV</a>
+        </div>
+        {% if rows %}
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Teacher</th>
+                        <th>Title</th>
+                        <th>Academic Year</th>
+                        <th>Term</th>
+                        <th>Attendance Count</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in rows %}
+                    <tr>
+                        <td>{{ row.teacher.get_full_name|default:row.teacher.username }}</td>
+                        <td>{{ row.teacher.title }}</td>
+                        <td>{{ row.academic_year }}</td>
+                        <td>{{ row.term }}</td>
+                        <td>{{ row.count }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p class="muted">No teachers found for this school.</p>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

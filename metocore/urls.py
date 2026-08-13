@@ -23,9 +23,19 @@ from accounts.views import (
     teacher_invitation_resend,
     teacher_invitation_revoke,
     teacher_remove,
+    teacher_update_title,
 )
-from attendance.views import check_in_page, dashboard, home_redirect
-from schools.views import geofence_edit, manage_geofences
+from announcements.views import announcement_delete, announcement_list
+from attendance.views import (
+    attendance_report,
+    attendance_report_export,
+    check_in_page,
+    dashboard,
+    home_redirect,
+    teacher_calendar,
+)
+from events.views import event_delete, event_list
+from schools.views import geofence_edit, manage_geofences, manage_terms, term_edit
 
 urlpatterns = [
     path('', RedirectView.as_view(pattern_name='home', permanent=False)),
@@ -46,8 +56,24 @@ urlpatterns = [
         name='teacher-invitation-resend',
     ),
     path('teachers/<int:user_id>/remove/', teacher_remove, name='teacher-remove'),
+    path('teachers/<int:user_id>/title/', teacher_update_title, name='teacher-update-title'),
+    path('teachers/<int:teacher_id>/calendar/', teacher_calendar, name='teacher-calendar'),
     path('geofences/', manage_geofences, name='geofence-list'),
     path('geofences/<int:geofence_id>/edit/', geofence_edit, name='geofence-edit'),
+    path('terms/', manage_terms, name='term-list'),
+    path('terms/<int:term_id>/edit/', term_edit, name='term-edit'),
+    path('announcements/', announcement_list, name='announcement-list'),
+    path(
+        'announcements/<int:announcement_id>/delete/',
+        announcement_delete,
+        name='announcement-delete',
+    ),
+    path('events/', event_list, name='event-list'),
+    path('events/<int:event_id>/delete/', event_delete, name='event-delete'),
+    path('reports/attendance/', attendance_report, name='attendance-report'),
+    path(
+        'reports/attendance/export/', attendance_report_export, name='attendance-report-export'
+    ),
     path('api/', include('attendance.urls')),
     path('platform/', include('schools.urls')),
     path('', include('accounts.urls')),

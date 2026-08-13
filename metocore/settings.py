@@ -84,6 +84,8 @@ INSTALLED_APPS = [
     'accounts',
     'schools',
     'attendance',
+    'announcements',
+    'events',
 ]
 
 AUTH_USER_MODEL = 'accounts.User'

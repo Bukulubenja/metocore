@@ -13,6 +13,7 @@ class User(AbstractUser):
         TEACHER = "TEACHER", "Teacher"
 
     role = models.CharField(max_length=10, choices=Role.choices, default=Role.TEACHER)
+    title = models.CharField(max_length=100, blank=True)
     school = models.ForeignKey(
         "schools.School",
         null=True,

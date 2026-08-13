@@ -1,3 +1,5 @@
+import datetime
+
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
@@ -5,7 +7,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 
 from accounts.emails import send_invitation_email
 from accounts.models import SchoolAdminInvitation, User
-from schools.models import Geofence, School
+from schools.models import Geofence, School, Term
 
 
 def _require_platform_admin(request) -> None:
@@ -187,3 +189,80 @@ def geofence_edit(request, geofence_id):
         return redirect("geofence-list")
 
     return render(request, "schools/geofence_edit.html", {"geofence": geofence})
+
+
+def _parse_term_fields(post):
+    errors = []
+
+    academic_year = post.get("academic_year", "").strip()
+    if not academic_year:
+        errors.append("Academic year is required.")
+
+    name = post.get("name", "").strip()
+    if not name:
+        errors.append("Term name is required.")
+
+    start_date = None
+    try:
+        start_date = datetime.date.fromisoformat(post.get("start_date", ""))
+    except ValueError:
+        errors.append("Start date must be a valid date.")
+
+    end_date = None
+    try:
+        end_date = datetime.date.fromisoformat(post.get("end_date", ""))
+    except ValueError:
+        errors.append("End date must be a valid date.")
+
+    if start_date and end_date and end_date < start_date:
+        errors.append("End date must be on or after the start date.")
+
+    return academic_year, name, start_date, end_date, errors
+
+
+@login_required
+def manage_terms(request):
+    _require_school_admin(request)
+    school = request.user.school
+
+    if request.method == "POST":
+        academic_year, name, start_date, end_date, errors = _parse_term_fields(request.POST)
+        if errors:
+            for error in errors:
+                messages.error(request, error)
+        else:
+            Term.objects.create(
+                school=school,
+                academic_year=academic_year,
+                name=name,
+                start_date=start_date,
+                end_date=end_date,
+            )
+            messages.success(request, f"Created term '{name}'.")
+        return redirect("term-list")
+
+    terms = school.terms.all()
+    return render(request, "schools/term_list.html", {"terms": terms})
+
+
+@login_required
+def term_edit(request, term_id):
+    _require_school_admin(request)
+    term = get_object_or_404(Term, pk=term_id, school=request.user.school)
+
+    if request.method == "POST":
+        academic_year, name, start_date, end_date, errors = _parse_term_fields(request.POST)
+        if errors:
+            for error in errors:
+                messages.error(request, error)
+            return redirect("term-edit", term_id=term.id)
+
+        term.academic_year = academic_year
+        term.name = name
+        term.start_date = start_date
+        term.end_date = end_date
+        term.save()
+        messages.success(request, f"Updated term '{name}'.")
+        return redirect("term-list")
+
+    return render(request, "schools/term_edit.html", {"term": term})

@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block title %}Terms — Metocore{% endblock %}
+
+{% block header_nav %}
+<a href="{% url 'dashboard' %}">Dashboard</a>
+<a href="{% url 'teacher-list' %}">Teachers</a>
+<a href="{% url 'geofence-list' %}">Geofences</a>
+<a href="{% url 'term-list' %}"><strong>Terms</strong></a>
+<a href="{% url 'announcement-list' %}">Announcements</a>
+<a href="{% url 'event-list' %}">Events</a>
+<a href="{% url 'attendance-report' %}">Reports</a>
+{% endblock %}
+
+{% block content %}
+<h1>Terms</h1>
+
+<div class="stack">
+    <div class="card">
+        <h2>Academic calendar</h2>
+        {% if terms %}
+        <div class="stack">
+            {% for term in terms %}
+            <div class="row-between">
+                <div>
+                    <strong>{{ term.academic_year }} — {{ term.name }}</strong>
+                    {% if term.is_current %}<span class="badge badge-success">Current</span>{% endif %}
+                    <div class="muted">{{ term.start_date|date:"Y-m-d" }} to {{ term.end_date|date:"Y-m-d" }}</div>
+                </div>
+                <a href="{% url 'term-edit' term.id %}" class="btn btn-secondary">Edit</a>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="muted">No terms yet — add one below to power attendance reports.</p>
+        {% endif %}
+    </div>
+
+    <div class="card">
+        <h2>Add a term</h2>
+        <form method="post">
+            {% csrf_token %}
+            <div class="row">
+                <div class="field" style="flex: 1;">
+                    <label>Academic year</label>
+                    <input type="text" name="academic_year" placeholder="2025/2026" required>
+                </div>
+                <div class="field" style="flex: 1;">
+                    <label>Term name</label>
+                    <input type="text" name="name" placeholder="Term 1" required>
+                </div>
+            </div>
+            <div class="row">
+                <div class="field" style="flex: 1;">
+                    <label>Start date</label>
+                    <input type="date" name="start_date" required>
+                </div>
+                <div class="field" style="flex: 1;">
+                    <label>End date</label>
+                    <input type="date" name="end_date" required>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Add term</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

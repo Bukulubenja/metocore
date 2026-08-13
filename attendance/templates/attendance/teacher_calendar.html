@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}{{ teacher.username }}'s attendance — Metocore{% endblock %}
+
+{% block header_nav %}
+<a href="{% url 'dashboard' %}">Dashboard</a>
+<a href="{% url 'teacher-list' %}"><strong>Teachers</strong></a>
+<a href="{% url 'geofence-list' %}">Geofences</a>
+<a href="{% url 'term-list' %}">Terms</a>
+<a href="{% url 'announcement-list' %}">Announcements</a>
+<a href="{% url 'event-list' %}">Events</a>
+<a href="{% url 'attendance-report' %}">Reports</a>
+{% endblock %}
+
+{% block content %}
+<p><a href="{% url 'teacher-list' %}">&laquo; Teachers</a></p>
+<h1>{% if teacher.title %}{{ teacher.title }} {% endif %}{{ teacher.username }}'s attendance</h1>
+
+<div class="card">
+    <div class="row-between" style="margin-bottom: 1rem;">
+        <a href="?year={{ prev_year }}&month={{ prev_month }}" class="btn btn-secondary">&laquo; Prev</a>
+        <h2 style="margin: 0;">{{ month_label }}</h2>
+        <a href="?year={{ next_year }}&month={{ next_month }}" class="btn btn-secondary">Next &raquo;</a>
+    </div>
+
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th><th>Sun</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for week in weeks %}
+                <tr>
+                    {% for cell in week %}
+                    {% if cell %}
+                    <td>
+                        {{ cell.day }}
+                        {% if cell.status == 'CONFIRMED' %}
+                        <div><span class="badge badge-success">Present</span></div>
+                        {% elif cell.status == 'NEEDS_REVIEW' %}
+                        <div><span class="badge badge-warning">Review</span></div>
+                        {% elif cell.status == 'OUT_OF_RANGE' %}
+                        <div><span class="badge badge-danger">Out of range</span></div>
+                        {% endif %}
+                    </td>
+                    {% else %}
+                    <td class="muted"></td>
+                    {% endif %}
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Edit {{ term.name }} — Metocore{% endblock %}
+
+{% block header_nav %}
+<a href="{% url 'dashboard' %}">Dashboard</a>
+<a href="{% url 'teacher-list' %}">Teachers</a>
+<a href="{% url 'geofence-list' %}">Geofences</a>
+<a href="{% url 'term-list' %}"><strong>Terms</strong></a>
+<a href="{% url 'announcement-list' %}">Announcements</a>
+<a href="{% url 'event-list' %}">Events</a>
+<a href="{% url 'attendance-report' %}">Reports</a>
+{% endblock %}
+
+{% block content %}
+<p><a href="{% url 'term-list' %}">&laquo; Terms</a></p>
+<h1>Edit {{ term.academic_year }} — {{ term.name }}</h1>
+
+<div class="card" style="max-width: 480px;">
+    <form method="post">
+        {% csrf_token %}
+        <div class="field">
+            <label>Academic year</label>
+            <input type="text" name="academic_year" value="{{ term.academic_year }}" required>
+        </div>
+        <div class="field">
+            <label>Term name</label>
+            <input type="text" name="name" value="{{ term.name }}" required>
+        </div>
+        <div class="field">
+            <label>Start date</label>
+            <input type="date" name="start_date" value="{{ term.start_date|date:'Y-m-d' }}" required>
+        </div>
+        <div class="field">
+            <label>End date</label>
+            <input type="date" name="end_date" value="{{ term.end_date|date:'Y-m-d' }}" required>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Save changes</button>
+    </form>
+</div>
+{% endblock %}

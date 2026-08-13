@@ -5,6 +5,10 @@
 <a href="{% url 'dashboard' %}">Dashboard</a>
 <a href="{% url 'teacher-list' %}"><strong>Teachers</strong></a>
 <a href="{% url 'geofence-list' %}">Geofences</a>
+<a href="{% url 'term-list' %}">Terms</a>
+<a href="{% url 'announcement-list' %}">Announcements</a>
+<a href="{% url 'event-list' %}">Events</a>
+<a href="{% url 'attendance-report' %}">Reports</a>
 {% endblock %}
 
 {% block content %}
@@ -18,13 +22,21 @@
             {% for teacher in teachers %}
             <div class="row-between">
                 <div>
-                    <strong>{{ teacher.username }}</strong>
+                    <strong>{% if teacher.title %}{{ teacher.title }} {% endif %}{{ teacher.username }}</strong>
                     <div class="muted">{{ teacher.email }}</div>
                 </div>
-                <form method="post" action="{% url 'teacher-remove' teacher.id %}">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-danger">Remove</button>
-                </form>
+                <div class="row">
+                    <form method="post" action="{% url 'teacher-update-title' teacher.id %}" class="row" style="gap: 0.4rem;">
+                        {% csrf_token %}
+                        <input type="text" name="title" value="{{ teacher.title }}" placeholder="Job title" style="padding: 0.5rem 0.7rem; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 0.85rem; width: 150px;">
+                        <button type="submit" class="btn btn-secondary">Save</button>
+                    </form>
+                    <a href="{% url 'teacher-calendar' teacher.id %}" class="btn btn-secondary">Calendar</a>
+                    <form method="post" action="{% url 'teacher-remove' teacher.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">Remove</button>
+                    </form>
+                </div>
             </div>
             {% endfor %}
         </div>
