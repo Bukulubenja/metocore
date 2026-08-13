@@ -53,6 +53,7 @@ from timetable.views import (
     subject_delete,
     subject_edit,
     timetable_entry_edit,
+    timetable_export,
     timetable_view,
 )
 
@@ -133,6 +134,7 @@ urlpatterns = [
         name='timetable-requirement-delete',
     ),
     path('timetable/generate/', generate_timetable_view, name='timetable-generate'),
+    path('timetable/export/', timetable_export, name='timetable-export'),
     path('timetable/', timetable_view, name='timetable-view'),
     path(
         'timetable/entries/<int:entry_id>/edit/',

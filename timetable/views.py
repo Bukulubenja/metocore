@@ -1,9 +1,11 @@
+import csv
 import datetime
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.db import IntegrityError, transaction
+from django.http import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import get_object_or_404, redirect, render
 
 from accounts.models import User
@@ -399,30 +401,37 @@ def generate_timetable_view(request):
     return render(request, "timetable/generate.html", {"terms": terms})
 
 
-@login_required
-def timetable_view(request):
-    _require_school_admin(request)
-    school = request.user.school
-
+def _resolve_selected_term(request, school):
     term_id = request.GET.get("term_id")
-    term = None
     if term_id:
-        term = get_object_or_404(Term, pk=term_id, school=school)
-    else:
-        term = Term.objects.current_for(school) or school.terms.first()
+        return get_object_or_404(Term, pk=term_id, school=school)
+    return Term.objects.current_for(school) or school.terms.first()
 
+
+def _build_timetable_grid(school, term):
     entries = []
     if term:
         entries = TimetableEntry.objects.filter(term=term, school_class__school=school).select_related(
             "school_class", "period", "subject", "teacher"
         )
 
-    classes = school.classes.all()
-    periods = school.periods.filter(is_teaching_period=True)
+    classes = list(school.classes.all())
+    periods = list(school.periods.filter(is_teaching_period=True))
 
     grid = {school_class.id: {period.id: [] for period in periods} for school_class in classes}
     for entry in entries:
         grid.setdefault(entry.school_class_id, {}).setdefault(entry.period_id, []).append(entry)
+
+    return classes, periods, grid
+
+
+@login_required
+def timetable_view(request):
+    _require_school_admin(request)
+    school = request.user.school
+
+    term = _resolve_selected_term(request, school)
+    classes, periods, grid = _build_timetable_grid(school, term)
 
     return render(
         request,
@@ -435,6 +444,39 @@ def timetable_view(request):
             "grid": grid,
         },
     )
+
+
+@login_required
+def timetable_export(request):
+    _require_school_admin(request)
+    school = request.user.school
+
+    term = _resolve_selected_term(request, school)
+    if term is None:
+        return HttpResponseBadRequest("No term selected.")
+
+    classes, periods, grid = _build_timetable_grid(school, term)
+
+    response = HttpResponse(content_type="text/csv")
+    filename = f"timetable_{school.name}_{term.name}.csv".replace(" ", "_")
+    response["Content-Disposition"] = f'attachment; filename="{filename}"'
+
+    writer = csv.writer(response)
+    writer.writerow(["Day", "Period", "Time"] + [school_class.name for school_class in classes])
+    for period in periods:
+        row = [
+            period.get_day_of_week_display(),
+            period.name,
+            f"{period.start_time:%H:%M}-{period.end_time:%H:%M}",
+        ]
+        for school_class in classes:
+            cell_entries = grid.get(school_class.id, {}).get(period.id, [])
+            row.append(
+                "; ".join(f"{e.subject.code}({e.teacher.username})" for e in cell_entries)
+            )
+        writer.writerow(row)
+
+    return response
 
 
 @login_required

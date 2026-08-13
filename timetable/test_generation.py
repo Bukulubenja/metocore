@@ -171,3 +171,56 @@ def test_my_timetable_shows_only_own_lessons(
     assert response.status_code == 200
     assert b"MTC" in response.content
     assert b"PHY" not in response.content
+
+
+@pytest.mark.django_db
+def test_export_returns_csv_attachment_with_lessons(
+    client, school_admin, term, teacher_a, periods, subject, school_class
+):
+    TimetableEntry.objects.create(
+        term=term, school_class=school_class, period=periods[0], subject=subject, teacher=teacher_a
+    )
+    client.force_login(school_admin)
+
+    response = client.get(f"/timetable/export/?term_id={term.id}")
+
+    assert response.status_code == 200
+    assert response["Content-Type"] == "text/csv"
+    assert "attachment" in response["Content-Disposition"]
+    content = response.content.decode()
+    assert "S2 EAST" in content
+    assert "MTC(jdoe)" in content
+
+
+@pytest.mark.django_db
+def test_export_joins_parallel_lessons_in_one_cell(
+    client, school_admin, term, teacher_a, teacher_b, periods, subject, other_subject, school
+):
+    parallel_class = SchoolClass.objects.create(
+        school=school, name="S.5", allows_parallel_lessons=True
+    )
+    TimetableEntry.objects.create(
+        term=term, school_class=parallel_class, period=periods[0], subject=subject, teacher=teacher_a
+    )
+    TimetableEntry.objects.create(
+        term=term,
+        school_class=parallel_class,
+        period=periods[0],
+        subject=other_subject,
+        teacher=teacher_b,
+    )
+    client.force_login(school_admin)
+
+    response = client.get(f"/timetable/export/?term_id={term.id}")
+
+    content = response.content.decode()
+    assert "MTC(jdoe); PHY(asmith)" in content
+
+
+@pytest.mark.django_db
+def test_export_forbidden_for_teacher(client, teacher_a, term):
+    client.force_login(teacher_a)
+
+    response = client.get(f"/timetable/export/?term_id={term.id}")
+
+    assert response.status_code == 403
