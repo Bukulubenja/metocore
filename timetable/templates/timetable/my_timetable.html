@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}My timetable — Metocore{% endblock %}
+{% block header %}{% endblock %}
+
+{% block content %}
+{% load static %}
+<div class="hero-band">
+    <span class="hero-band__logo"><img src="{% static 'img/logo-full.png' %}" alt="Metocore"></span>
+    <h1>My timetable</h1>
+    {% if term %}<p>{{ term.academic_year }} — {{ term.name }}</p>{% endif %}
+</div>
+
+<div class="card" style="max-width: 560px; margin: -1.5rem auto 0;">
+    {% if not term %}
+    <p class="muted">No current term is set up yet.</p>
+    {% elif entries %}
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr><th>Day</th><th>Period</th><th>Class</th><th>Subject</th></tr>
+            </thead>
+            <tbody>
+                {% for entry in entries %}
+                <tr>
+                    <td>{{ entry.period.get_day_of_week_display }}</td>
+                    <td>{{ entry.period.name }} ({{ entry.period.start_time|time:"H:i" }})</td>
+                    <td>{{ entry.school_class.name }}</td>
+                    <td>{{ entry.subject.code }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p class="muted">No lessons scheduled for you yet this term.</p>
+    {% endif %}
+</div>
+
+{% block bottom_nav %}
+{% include "_bottom_nav.html" with active="timetable" %}
+{% endblock %}
+{% endblock %}

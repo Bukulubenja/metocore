@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Generate timetable — Metocore{% endblock %}
+
+{% block header_nav %}
+<a href="{% url 'dashboard' %}">Dashboard</a>
+<a href="{% url 'teacher-list' %}">Teachers</a>
+<a href="{% url 'geofence-list' %}">Geofences</a>
+<a href="{% url 'term-list' %}">Terms</a>
+<a href="{% url 'announcement-list' %}">Announcements</a>
+<a href="{% url 'event-list' %}">Events</a>
+<a href="{% url 'attendance-report' %}">Reports</a>
+<a href="{% url 'timetable-period-list' %}"><strong>Timetable</strong></a>
+{% endblock %}
+
+{% block content %}
+<h1>Generate timetable</h1>
+<p class="muted" style="margin-top: -0.5rem;">Runs once all periods, subjects, classes, teacher availability, and lesson requirements are set up. Regenerating replaces the previous timetable for that term.</p>
+
+<div class="card" style="max-width: 480px;">
+    {% if not terms %}
+    <p class="muted">Add a term first on the <a href="{% url 'term-list' %}">Terms</a> page.</p>
+    {% else %}
+    <form method="post">
+        {% csrf_token %}
+        <div class="field">
+            <label>Term</label>
+            <select name="term_id" required>
+                {% for term in terms %}
+                <option value="{{ term.id }}">{{ term.academic_year }} — {{ term.name }}{% if term.is_current %} (current){% endif %}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Generate timetable</button>
+    </form>
+    {% endif %}
+</div>
+{% endblock %}

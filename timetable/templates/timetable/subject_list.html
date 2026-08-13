@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Subjects — Metocore{% endblock %}
+
+{% block header_nav %}
+<a href="{% url 'dashboard' %}">Dashboard</a>
+<a href="{% url 'teacher-list' %}">Teachers</a>
+<a href="{% url 'geofence-list' %}">Geofences</a>
+<a href="{% url 'term-list' %}">Terms</a>
+<a href="{% url 'announcement-list' %}">Announcements</a>
+<a href="{% url 'event-list' %}">Events</a>
+<a href="{% url 'attendance-report' %}">Reports</a>
+<a href="{% url 'timetable-period-list' %}"><strong>Timetable</strong></a>
+{% endblock %}
+
+{% block content %}
+<h1>Subjects</h1>
+
+<div class="stack">
+    <div class="card">
+        <h2>Subject list</h2>
+        {% if subjects %}
+        <div class="stack">
+            {% for subject in subjects %}
+            <div class="row-between">
+                <div><strong>{{ subject.name }}</strong> <span class="muted">({{ subject.code }})</span></div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="muted">No subjects yet — add one below.</p>
+        {% endif %}
+    </div>
+
+    <div class="card">
+        <h2>Add a subject</h2>
+        <form method="post">
+            {% csrf_token %}
+            <div class="row">
+                <div class="field" style="flex: 2;">
+                    <label>Name</label>
+                    <input type="text" name="name" placeholder="Mathematics" required>
+                </div>
+                <div class="field" style="flex: 1;">
+                    <label>Code</label>
+                    <input type="text" name="code" placeholder="MTC" required>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Add subject</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

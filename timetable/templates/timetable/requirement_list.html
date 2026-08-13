@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block title %}Lesson requirements — Metocore{% endblock %}
+
+{% block header_nav %}
+<a href="{% url 'dashboard' %}">Dashboard</a>
+<a href="{% url 'teacher-list' %}">Teachers</a>
+<a href="{% url 'geofence-list' %}">Geofences</a>
+<a href="{% url 'term-list' %}">Terms</a>
+<a href="{% url 'announcement-list' %}">Announcements</a>
+<a href="{% url 'event-list' %}">Events</a>
+<a href="{% url 'attendance-report' %}">Reports</a>
+<a href="{% url 'timetable-period-list' %}"><strong>Timetable</strong></a>
+{% endblock %}
+
+{% block content %}
+<h1>Lesson requirements</h1>
+<p class="muted" style="margin-top: -0.5rem;">Which teacher teaches which subject to which class, and how many periods a week it needs.</p>
+
+<div class="stack">
+    <div class="card">
+        <h2>Requirements</h2>
+        {% if requirements %}
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr><th>Teacher</th><th>Subject</th><th>Class</th><th>Periods/week</th></tr>
+                </thead>
+                <tbody>
+                    {% for req in requirements %}
+                    <tr>
+                        <td>{% if req.teacher.title %}{{ req.teacher.title }} {% endif %}{{ req.teacher.username }}</td>
+                        <td>{{ req.subject.code }}</td>
+                        <td>{{ req.school_class.name }}</td>
+                        <td>{{ req.periods_per_week }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p class="muted">No requirements yet — add one below.</p>
+        {% endif %}
+    </div>
+
+    <div class="card">
+        <h2>Add a requirement</h2>
+        {% if not teachers or not subjects or not classes %}
+        <p class="muted">You'll need at least one teacher, subject, and class before adding a requirement.</p>
+        {% else %}
+        <form method="post">
+            {% csrf_token %}
+            <div class="field">
+                <label>Teacher</label>
+                <select name="teacher_id" required>
+                    {% for teacher in teachers %}
+                    <option value="{{ teacher.id }}">{% if teacher.title %}{{ teacher.title }} {% endif %}{{ teacher.username }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="row">
+                <div class="field" style="flex: 1;">
+                    <label>Subject</label>
+                    <select name="subject_id" required>
+                        {% for subject in subjects %}
+                        <option value="{{ subject.id }}">{{ subject.name }} ({{ subject.code }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="field" style="flex: 1;">
+                    <label>Class</label>
+                    <select name="school_class_id" required>
+                        {% for school_class in classes %}
+                        <option value="{{ school_class.id }}">{{ school_class.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="field" style="flex: 1;">
+                    <label>Periods/week</label>
+                    <input type="number" name="periods_per_week" min="1" required>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Add requirement</button>
+        </form>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

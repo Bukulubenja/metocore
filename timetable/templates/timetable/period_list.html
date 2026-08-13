@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block title %}Periods — Metocore{% endblock %}
+
+{% block header_nav %}
+<a href="{% url 'dashboard' %}">Dashboard</a>
+<a href="{% url 'teacher-list' %}">Teachers</a>
+<a href="{% url 'geofence-list' %}">Geofences</a>
+<a href="{% url 'term-list' %}">Terms</a>
+<a href="{% url 'announcement-list' %}">Announcements</a>
+<a href="{% url 'event-list' %}">Events</a>
+<a href="{% url 'attendance-report' %}">Reports</a>
+<a href="{% url 'timetable-period-list' %}"><strong>Timetable</strong></a>
+{% endblock %}
+
+{% block content %}
+<h1>Periods</h1>
+<p class="muted" style="margin-top: -0.5rem;">The day/time grid your timetable is built from — set this up before adding subjects and classes.</p>
+
+<div class="stack">
+    <div class="card">
+        <h2>Teaching day grid</h2>
+        {% if periods %}
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr><th>Day</th><th>Period</th><th>Time</th><th>Type</th></tr>
+                </thead>
+                <tbody>
+                    {% for period in periods %}
+                    <tr>
+                        <td>{{ period.get_day_of_week_display }}</td>
+                        <td>{{ period.name }}</td>
+                        <td>{{ period.start_time|time:"H:i" }} – {{ period.end_time|time:"H:i" }}</td>
+                        <td>{% if period.is_teaching_period %}<span class="badge badge-success">Teaching</span>{% else %}<span class="badge badge-neutral">Break / Lunch</span>{% endif %}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p class="muted">No periods yet — add your day/time grid below.</p>
+        {% endif %}
+    </div>
+
+    <div class="card">
+        <h2>Add a period</h2>
+        <form method="post">
+            {% csrf_token %}
+            <div class="field">
+                <label>Day</label>
+                <select name="day_of_week" required>
+                    {% for value, label in day_choices %}
+                    <option value="{{ value }}">{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="field">
+                <label>Period name</label>
+                <input type="text" name="name" placeholder="Morning 1" required>
+            </div>
+            <div class="row">
+                <div class="field" style="flex: 1;">
+                    <label>Start time</label>
+                    <input type="time" name="start_time" required>
+                </div>
+                <div class="field" style="flex: 1;">
+                    <label>End time</label>
+                    <input type="time" name="end_time" required>
+                </div>
+            </div>
+            <div class="field">
+                <label style="display: flex; align-items: center; gap: 0.5rem; font-weight: 500;">
+                    <input type="checkbox" name="is_teaching_period" checked style="width: auto;">
+                    This is a teaching period (uncheck for Break/Lunch)
+                </label>
+            </div>
+            <button type="submit" class="btn btn-primary">Add period</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

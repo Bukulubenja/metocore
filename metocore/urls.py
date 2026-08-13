@@ -36,6 +36,17 @@ from attendance.views import (
 )
 from events.views import event_delete, event_list
 from schools.views import geofence_edit, manage_geofences, manage_terms, term_edit
+from timetable.views import (
+    generate_timetable_view,
+    manage_classes,
+    manage_lesson_requirements,
+    manage_periods,
+    manage_subjects,
+    manage_teacher_availability,
+    my_timetable,
+    timetable_entry_edit,
+    timetable_view,
+)
 
 urlpatterns = [
     path('', RedirectView.as_view(pattern_name='home', permanent=False)),
@@ -74,6 +85,27 @@ urlpatterns = [
     path(
         'reports/attendance/export/', attendance_report_export, name='attendance-report-export'
     ),
+    path('timetable/periods/', manage_periods, name='timetable-period-list'),
+    path('timetable/subjects/', manage_subjects, name='timetable-subject-list'),
+    path('timetable/classes/', manage_classes, name='timetable-class-list'),
+    path(
+        'timetable/availability/',
+        manage_teacher_availability,
+        name='timetable-availability',
+    ),
+    path(
+        'timetable/requirements/',
+        manage_lesson_requirements,
+        name='timetable-requirement-list',
+    ),
+    path('timetable/generate/', generate_timetable_view, name='timetable-generate'),
+    path('timetable/', timetable_view, name='timetable-view'),
+    path(
+        'timetable/entries/<int:entry_id>/edit/',
+        timetable_entry_edit,
+        name='timetable-entry-edit',
+    ),
+    path('my-timetable/', my_timetable, name='my-timetable'),
     path('api/', include('attendance.urls')),
     path('platform/', include('schools.urls')),
     path('', include('accounts.urls')),

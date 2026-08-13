@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}Classes — Metocore{% endblock %}
+
+{% block header_nav %}
+<a href="{% url 'dashboard' %}">Dashboard</a>
+<a href="{% url 'teacher-list' %}">Teachers</a>
+<a href="{% url 'geofence-list' %}">Geofences</a>
+<a href="{% url 'term-list' %}">Terms</a>
+<a href="{% url 'announcement-list' %}">Announcements</a>
+<a href="{% url 'event-list' %}">Events</a>
+<a href="{% url 'attendance-report' %}">Reports</a>
+<a href="{% url 'timetable-period-list' %}"><strong>Timetable</strong></a>
+{% endblock %}
+
+{% block content %}
+<h1>Classes</h1>
+<p class="muted" style="margin-top: -0.5rem;">Streams like "S2 EAST" or "S.5". Turn on "allows parallel lessons" for classes where students split into subject-combination groups (e.g. A-Level) that run at the same time.</p>
+
+<div class="stack">
+    <div class="card">
+        <h2>Class list</h2>
+        {% if classes %}
+        <div class="stack">
+            {% for school_class in classes %}
+            <div class="row-between">
+                <div>
+                    <strong>{{ school_class.name }}</strong>
+                    {% if school_class.allows_parallel_lessons %}<span class="badge badge-neutral">Allows parallel lessons</span>{% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="muted">No classes yet — add one below.</p>
+        {% endif %}
+    </div>
+
+    <div class="card">
+        <h2>Add a class</h2>
+        <form method="post">
+            {% csrf_token %}
+            <div class="field">
+                <label>Name</label>
+                <input type="text" name="name" placeholder="S2 EAST" required>
+            </div>
+            <div class="field">
+                <label style="display: flex; align-items: center; gap: 0.5rem; font-weight: 500;">
+                    <input type="checkbox" name="allows_parallel_lessons" style="width: auto;">
+                    Allows parallel lessons (multiple subject groups at once, e.g. A-Level options)
+                </label>
+            </div>
+            <button type="submit" class="btn btn-primary">Add class</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

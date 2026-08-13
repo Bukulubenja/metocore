@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% load timetable_extras %}
+{% block title %}Timetable — Metocore{% endblock %}
+
+{% block header_nav %}
+<a href="{% url 'dashboard' %}">Dashboard</a>
+<a href="{% url 'teacher-list' %}">Teachers</a>
+<a href="{% url 'geofence-list' %}">Geofences</a>
+<a href="{% url 'term-list' %}">Terms</a>
+<a href="{% url 'announcement-list' %}">Announcements</a>
+<a href="{% url 'event-list' %}">Events</a>
+<a href="{% url 'attendance-report' %}">Reports</a>
+<a href="{% url 'timetable-period-list' %}"><strong>Timetable</strong></a>
+{% endblock %}
+
+{% block content %}
+<div class="row-between" style="margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.75rem;">
+    <div>
+        <h1 style="margin-bottom: 0.25rem;">Timetable</h1>
+        {% if term %}<span class="muted">{{ term.academic_year }} — {{ term.name }}</span>{% endif %}
+    </div>
+    <div class="row">
+        {% if terms|length > 1 %}
+        <form method="get">
+            <select name="term_id" onchange="this.form.submit()">
+                {% for t in terms %}
+                <option value="{{ t.id }}" {% if term.id == t.id %}selected{% endif %}>{{ t.academic_year }} — {{ t.name }}</option>
+                {% endfor %}
+            </select>
+        </form>
+        {% endif %}
+        <a href="{% url 'timetable-generate' %}" class="btn btn-primary">Generate / regenerate</a>
+    </div>
+</div>
+
+{% if not term %}
+<div class="card empty-state">
+    <p>No term selected yet — add one on the <a href="{% url 'term-list' %}">Terms</a> page, then generate a timetable.</p>
+</div>
+{% elif not classes %}
+<div class="card empty-state">
+    <p>No classes set up yet — add some on the <a href="{% url 'timetable-class-list' %}">Classes</a> page.</p>
+</div>
+{% else %}
+{% regroup periods by day_of_week as day_groups %}
+{% for day in day_groups %}
+<div class="table-wrap" style="margin-bottom: 1.5rem;">
+    <table>
+        <thead>
+            <tr>
+                <th>{{ day.list.0.get_day_of_week_display }}</th>
+                {% for period in day.list %}
+                <th>{{ period.name }}<br><span style="font-weight: 400; text-transform: none;">{{ period.start_time|time:"H:i" }}-{{ period.end_time|time:"H:i" }}</span></th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for school_class in classes %}
+            <tr>
+                <td><strong>{{ school_class.name }}</strong></td>
+                {% for period in day.list %}
+                <td>
+                    {% with cell=grid|get_item:school_class.id|get_item:period.id %}
+                    {% for entry in cell %}
+                    <a href="{% url 'timetable-entry-edit' entry.id %}" style="display: block; text-decoration: none; color: inherit;">
+                        {{ entry.subject.code }}<span class="muted">({% if entry.teacher.title %}{{ entry.teacher.title }} {% endif %}{{ entry.teacher.username }})</span>
+                    </a>
+                    {% endfor %}
+                    {% endwith %}
+                </td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endfor %}
+{% endif %}
+{% endblock %}

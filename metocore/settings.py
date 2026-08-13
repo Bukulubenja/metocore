@@ -86,6 +86,7 @@ INSTALLED_APPS = [
     'attendance',
     'announcements',
     'events',
+    'timetable',
 ]
 
 AUTH_USER_MODEL = 'accounts.User'

@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}Teacher availability — Metocore{% endblock %}
+
+{% block header_nav %}
+<a href="{% url 'dashboard' %}">Dashboard</a>
+<a href="{% url 'teacher-list' %}">Teachers</a>
+<a href="{% url 'geofence-list' %}">Geofences</a>
+<a href="{% url 'term-list' %}">Terms</a>
+<a href="{% url 'announcement-list' %}">Announcements</a>
+<a href="{% url 'event-list' %}">Events</a>
+<a href="{% url 'attendance-report' %}">Reports</a>
+<a href="{% url 'timetable-period-list' %}"><strong>Timetable</strong></a>
+{% endblock %}
+
+{% block content %}
+<h1>Teacher availability</h1>
+<p class="muted" style="margin-top: -0.5rem;">The days and periods each teacher is around — the timetable generator only schedules a teacher into periods checked here.</p>
+
+<div class="stack">
+    <div class="card">
+        <h2>Choose a teacher</h2>
+        <form method="get">
+            <div class="row">
+                <div class="field" style="flex: 1; margin-bottom: 0;">
+                    <select name="teacher_id" onchange="this.form.submit()">
+                        <option value="">— Select a teacher —</option>
+                        {% for teacher in teachers %}
+                        <option value="{{ teacher.id }}" {% if selected_teacher.id == teacher.id %}selected{% endif %}>
+                            {% if teacher.title %}{{ teacher.title }} {% endif %}{{ teacher.username }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    {% if selected_teacher %}
+    <div class="card">
+        <h2>{% if selected_teacher.title %}{{ selected_teacher.title }} {% endif %}{{ selected_teacher.username }}'s available periods</h2>
+        {% if periods %}
+        <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="teacher_id" value="{{ selected_teacher.id }}">
+            <div class="stack">
+                {% for period in periods %}
+                <label style="display: flex; align-items: center; gap: 0.5rem;">
+                    <input type="checkbox" name="period_ids" value="{{ period.id }}" style="width: auto;"
+                        {% if period.id in available_period_ids %}checked{% endif %}>
+                    {{ period.get_day_of_week_display }} — {{ period.name }} ({{ period.start_time|time:"H:i" }}-{{ period.end_time|time:"H:i" }})
+                </label>
+                {% endfor %}
+            </div>
+            <button type="submit" class="btn btn-primary" style="margin-top: 1rem;">Save availability</button>
+        </form>
+        {% else %}
+        <p class="muted">Add teaching periods first on the <a href="{% url 'timetable-period-list' %}">Periods</a> page.</p>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
