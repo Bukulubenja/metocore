@@ -13,6 +13,12 @@
 {% endif %}
 {% endblock %}
 
+{% block bottom_nav %}
+{% if not user.is_school_admin %}
+{% include "_bottom_nav.html" with active="announcements" %}
+{% endif %}
+{% endblock %}
+
 {% block content %}
 <h1>Announcements</h1>
 

@@ -13,10 +13,11 @@
 
 {% block content %}
 <h1>Attendance report</h1>
+<p class="muted" style="margin-top: -0.5rem;">Pick a term or a date range to see each teacher's attendance count, then download it as a spreadsheet.</p>
 
 <div class="stack">
     <div class="card">
-        <h2>Choose a period</h2>
+        <h2>1. Choose a period</h2>
         {% if errors %}
         <ul class="messages">
             {% for error in errors %}
@@ -28,7 +29,7 @@
             <div class="field">
                 <label>Term</label>
                 <select name="term_id">
-                    <option value="">— Use a custom date range —</option>
+                    <option value="">— Use a custom date range instead —</option>
                     {% for term in terms %}
                     <option value="{{ term.id }}">{{ term.academic_year }} — {{ term.name }}</option>
                     {% endfor %}
@@ -44,16 +45,29 @@
                     <input type="date" name="end_date">
                 </div>
             </div>
-            <button type="submit" class="btn btn-primary">Build report</button>
+            <p class="muted" style="margin: -0.5rem 0 1rem; font-size: 0.85rem;">Leave the dates blank and pick a term above, or leave the term unset and fill in the dates.</p>
+            <button type="submit" class="btn btn-primary">Show report</button>
         </form>
     </div>
 
     {% if rows is not None %}
     <div class="card">
-        <div class="row-between" style="margin-bottom: 1rem;">
-            <h2 style="margin: 0;">Results</h2>
-            <a href="{% url 'attendance-report-export' %}?{{ query_string }}" class="btn btn-secondary">Download CSV</a>
+        <div class="row-between" style="align-items: flex-start; gap: 1rem; flex-wrap: wrap;">
+            <div>
+                <h2 style="margin: 0;">2. Download the results</h2>
+                <p class="muted" style="margin: 0.25rem 0 0; font-size: 0.85rem;">
+                    {% if term_name %}{{ academic_year }} — {{ term_name }}{% else %}{{ start_date|date:"M j, Y" }} – {{ end_date|date:"M j, Y" }}{% endif %}
+                    · {{ rows|length }} teacher{{ rows|length|pluralize }}
+                </p>
+            </div>
+            <a href="{% url 'attendance-report-export' %}?{{ query_string }}" class="btn btn-primary">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                Download spreadsheet (CSV)
+            </a>
         </div>
+        <p class="muted" style="font-size: 0.8rem; margin: 0.75rem 0 1.25rem;">
+            The file includes each teacher's name, title, school, academic year, term, and confirmed attendance count for this period — opens directly in Excel or Google Sheets.
+        </p>
         {% if rows %}
         <div class="table-wrap">
             <table>

@@ -173,6 +173,8 @@ def attendance_report(request):
 
     rows = None
     errors = []
+    start_date = end_date = None
+    academic_year = term_name = None
     if request.GET:
         start_date, end_date, academic_year, term_name, errors = _resolve_report_period(
             request
@@ -187,6 +189,10 @@ def attendance_report(request):
             "terms": terms,
             "rows": rows,
             "errors": errors,
+            "start_date": start_date,
+            "end_date": end_date,
+            "academic_year": academic_year,
+            "term_name": term_name,
             "query_string": request.GET.urlencode(),
         },
     )

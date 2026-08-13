@@ -48,11 +48,7 @@
 </form>
 
 {% block bottom_nav %}
-<nav class="bottom-nav">
-    <a href="{% url 'check-in-page' %}" class="active">Check In</a>
-    <a href="{% url 'announcement-list' %}">Announcements</a>
-    <a href="{% url 'event-list' %}">Events</a>
-</nav>
+{% include "_bottom_nav.html" with active="check-in" %}
 {% endblock %}
 
 <script>

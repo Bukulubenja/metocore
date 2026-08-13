@@ -401,41 +401,58 @@ tr:last-child td {
 .muted { color: var(--ink-muted); }
 .text-center { text-align: center; }
 
-/* Bottom nav (mobile, teacher check-in) */
+/* Bottom nav (teacher check-in, announcements, events) */
 
 .bottom-nav {
-  display: none;
+  display: flex;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 30;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  padding: 0.5rem 0.5rem calc(0.5rem + env(safe-area-inset-bottom, 0px));
+  justify-content: center;
+  gap: 0.35rem;
+  box-shadow: 0 -6px 20px rgba(0, 50, 114, 0.08);
+}
+
+.bottom-nav a {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  min-width: 76px;
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--radius-md);
+  color: var(--ink-muted);
+  text-decoration: none;
+  font-size: 0.72rem;
+  font-weight: 600;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.bottom-nav a svg {
+  width: 20px;
+  height: 20px;
+}
+
+.bottom-nav a:hover {
+  color: var(--color-navy);
+}
+
+.bottom-nav a.active {
+  color: var(--color-navy);
+  background: rgba(0, 50, 114, 0.08);
+}
+
+body:has(.bottom-nav) .app-main {
+  padding-bottom: 6rem;
 }
 
 @media (max-width: 640px) {
   .app-main {
-    padding: 1.25rem 1rem 5.5rem;
-  }
-
-  .bottom-nav {
-    display: flex;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: var(--surface);
-    border-top: 1px solid var(--border);
-    padding: 0.6rem 0;
-    justify-content: space-around;
-  }
-
-  .bottom-nav a {
-    color: var(--ink-muted);
-    text-decoration: none;
-    font-size: 0.75rem;
-    font-weight: 600;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.15rem;
-  }
-
-  .bottom-nav a.active {
-    color: var(--color-navy);
+    padding: 1.25rem 1rem;
   }
 }
